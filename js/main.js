@@ -24,6 +24,7 @@ import {
   renderDashboard,
   renderTransactions,
   renderCharts,
+  renderRecent,
   openAddModal,
   openEditModal,
   closeModal,
@@ -84,10 +85,11 @@ function applyFilters() {
   renderTransactions(filtered, emptyMessage);
 }
 
-// Re-draw the dashboard, charts, and (filtered) table.
+// Re-draw the dashboard, charts, recent list, and table.
 function refreshScreen() {
   renderDashboard();
   renderCharts();
+  renderRecent();
   applyFilters();
 }
 

@@ -216,6 +216,75 @@ export function clearFormErrors() {
   box.hidden = true;
 }
 
+// Draw the 5 most recent transactions in the dashboard cell.
+// Uses the same newest-first order as the table.
+export function renderRecent() {
+  const list = document.getElementById("recentList");
+  const empty = document.getElementById("recentEmpty");
+  list.textContent = "";
+
+  const sorted = transactions.slice();
+  sorted.sort(function (a, b) {
+    if (a.date < b.date) {
+      return 1;
+    }
+    if (a.date > b.date) {
+      return -1;
+    }
+    if (a.id < b.id) {
+      return 1;
+    }
+    if (a.id > b.id) {
+      return -1;
+    }
+    return 0;
+  });
+
+  const recent = sorted.slice(0, 5);
+  if (recent.length === 0) {
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  recent.forEach(function (transaction) {
+    const item = document.createElement("li");
+
+    const dot = document.createElement("span");
+    dot.className = "recent-dot";
+    if (transaction.type === "income") {
+      dot.style.backgroundColor = "var(--income)";
+    } else {
+      dot.style.backgroundColor = "var(--expense)";
+    }
+
+    const text = document.createElement("span");
+    const title = document.createElement("span");
+    title.className = "recent-title";
+    title.textContent = transaction.title;
+    const meta = document.createElement("span");
+    meta.className = "recent-meta";
+    meta.textContent = "  " + transaction.category + " · " + transaction.date;
+    text.appendChild(title);
+    text.appendChild(meta);
+
+    const amount = document.createElement("span");
+    amount.className = "recent-amount";
+    if (transaction.type === "income") {
+      amount.textContent = "+" + formatAmount(transaction.amount);
+      amount.className = "recent-amount amount-income";
+    } else {
+      amount.textContent = "-" + formatAmount(transaction.amount);
+      amount.className = "recent-amount amount-expense";
+    }
+
+    item.appendChild(dot);
+    item.appendChild(text);
+    item.appendChild(amount);
+    list.appendChild(item);
+  });
+}
+
 // Month names for chart labels ("2026-11" -> "Nov 2026").
 const MONTH_NAMES = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",

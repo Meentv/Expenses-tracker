@@ -69,7 +69,7 @@
 
     <main class="main-content">
 
-      <!-- ===== Dashboard overview ===== -->
+      <!-- ===== Dashboard (Bento Grid) ===== -->
       <section id="dashboard" aria-label="Financial summary">
         <div class="welcome">
           <div>
@@ -83,8 +83,9 @@
           </div>
         </div>
 
-        <div class="overview-grid">
-          <article class="card card-balance">
+        <div class="bento">
+          <!-- Hero: total balance (spans 2 columns) -->
+          <article class="card card-balance bento-balance">
             <h3>Total Balance</h3>
             <p class="card-value" id="availableBalance">0.00</p>
             <p class="card-note">Income minus expenses</p>
@@ -101,9 +102,8 @@
             <p class="card-value" id="totalExpenses">0.00</p>
             <p class="card-note">Money spent</p>
           </article>
-        </div>
 
-        <div class="stats-grid">
+          <!-- Small stat cells -->
           <article class="stat">
             <h3>Total Transactions</h3>
             <p class="stat-value" id="totalTransactions">0</p>
@@ -123,12 +123,12 @@
         </div>
       </section>
 
-      <!-- ===== Analytics (charts from real data) ===== -->
+      <!-- ===== Analytics (Bento Grid, continued) ===== -->
       <section id="analytics" aria-label="Financial analytics">
         <h2>Analytics</h2>
 
-        <div class="analytics-grid">
-          <div class="panel">
+        <div class="bento">
+          <div class="panel bento-chart">
             <div class="panel-head">
               <h3>Income vs Expenses</h3>
               <div class="legend">
@@ -141,13 +141,22 @@
             <p id="monthlyEmpty" class="chart-empty" hidden>No transaction data yet. Add income or expenses to see the chart.</p>
           </div>
 
-          <div class="panel">
+          <div class="panel bento-category">
             <div class="panel-head">
               <h3>Expense Breakdown by Category</h3>
             </div>
             <p class="section-note">Where your money goes, largest first.</p>
             <div id="categoryChart" class="category-chart"></div>
             <p id="categoryEmpty" class="chart-empty" hidden>No expense data yet. Add an expense to see the breakdown.</p>
+          </div>
+
+          <div class="panel bento-recent">
+            <div class="panel-head">
+              <h3>Recent Transactions</h3>
+              <a href="#transactions" class="panel-link">View all</a>
+            </div>
+            <ul id="recentList" class="recent-list"></ul>
+            <p id="recentEmpty" class="chart-empty" hidden>No transactions yet. Add your first one above.</p>
           </div>
         </div>
       </section>
