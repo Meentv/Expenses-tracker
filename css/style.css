@@ -1,0 +1,532 @@
+/* ============================================================
+   style.css — Personal Finance & Expense Tracker
+   ------------------------------------------------------------
+   Responsibility: ALL visual styling.
+   Sections in this file:
+     1. Variables & reset
+     2. Page layout (sidebar + main)
+     3. Buttons
+     4. Summary cards
+     5. Filter bar
+     6. Transaction table & empty state
+     7. Exchange rates panel
+     8. Modal form
+     9. Message toast & footer
+    10. Responsive rules (tablet & mobile)
+   ============================================================ */
+
+/* ---------- 1. Variables & reset ---------- */
+/* CSS variables store reusable values. Change a color once here
+   and it updates everywhere. */
+:root {
+  --color-bg: #f4f6f8;
+  --color-surface: #ffffff;
+  --color-text: #1f2937;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #0f766e;
+  --color-primary-dark: #115e59;
+  --color-income: #16a34a;
+  --color-expense: #dc2626;
+  --color-sidebar: #111827;
+  --color-sidebar-text: #e5e7eb;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Reset: remove default margins so spacing is predictable. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* The hidden attribute must always win (used for modal,
+   empty state, API states). */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  /* Flexbox: sidebar on the left, main content on the right. */
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ---------- 2. Page layout (sidebar + main) ---------- */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background-color: var(--color-sidebar);
+  color: var(--color-sidebar-text);
+  padding: 24px 20px;
+  /* Sticky keeps the sidebar visible while the page scrolls. */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 1.4rem;
+}
+
+.tagline {
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.main-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.main-nav a {
+  color: var(--color-sidebar-text);
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* Hover effect: subtle background change when the mouse is over. */
+.main-nav a:hover {
+  background-color: #1f2937;
+}
+
+.main-content {
+  flex: 1;
+  padding: 28px;
+  max-width: 1100px;
+}
+
+.main-content section {
+  margin-bottom: 36px;
+}
+
+.main-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 16px;
+}
+
+.section-note {
+  color: var(--color-muted);
+  margin-bottom: 12px;
+}
+
+/* ---------- 3. Buttons ---------- */
+.btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+}
+
+.sidebar .btn-primary {
+  margin-top: auto;
+  width: 100%;
+}
+
+/* ---------- 4. Summary cards ---------- */
+/* CSS Grid: cards flow into as many columns as fit. */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+
+.card h3 {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  font-weight: normal;
+  margin-bottom: 8px;
+}
+
+.card-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Color accents so income/expense/balance are easy to scan. */
+.card-income .card-value {
+  color: var(--color-income);
+}
+
+.card-expense .card-value {
+  color: var(--color-expense);
+}
+
+.card-balance {
+  background-color: var(--color-sidebar);
+  border-color: var(--color-sidebar);
+}
+
+.card-balance h3 {
+  color: #9ca3af;
+}
+
+.card-balance .card-value {
+  color: #ffffff;
+}
+
+/* ---------- 5. Filter bar ---------- */
+.filter-bar {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin-bottom: 20px;
+  /* Flexbox with wrap: filters sit in a row on desktop
+     and wrap onto new lines when space runs out. */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 150px;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+
+.filter-group input,
+.filter-group select,
+.form-group input,
+.form-group select {
+  font-family: inherit;
+  font-size: 0.95rem;
+  padding: 9px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  width: 100%;
+}
+
+/* Focus state: clear outline so keyboard users can see where they are. */
+.filter-group input:focus,
+.filter-group select:focus,
+.form-group input:focus,
+.form-group select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* ---------- 6. Transaction table & empty state ---------- */
+/* Wrapper allows horizontal scrolling on small screens
+   instead of breaking the layout. */
+.table-wrap {
+  overflow-x: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.transaction-table th,
+.transaction-table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.transaction-table th {
+  color: var(--color-muted);
+  font-weight: normal;
+  font-size: 0.85rem;
+  background-color: #f9fafb;
+}
+
+.transaction-table tr:hover {
+  background-color: #f9fafb;
+}
+
+.amount-income {
+  color: var(--color-income);
+  font-weight: bold;
+}
+
+.amount-expense {
+  color: var(--color-expense);
+  font-weight: bold;
+}
+
+.row-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.row-actions button {
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  cursor: pointer;
+}
+
+.row-actions button:hover {
+  background-color: #f3f4f6;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-muted);
+}
+
+.empty-icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+/* ---------- 7. Exchange rates panel ---------- */
+.rates-panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  max-width: 560px;
+}
+
+.rates-loading {
+  color: var(--color-muted);
+}
+
+.rates-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rates-list li {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rates-list li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rates-updated {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  margin-top: 12px;
+}
+
+.rates-error {
+  color: var(--color-expense);
+}
+
+/* ---------- 8. Modal form ---------- */
+/* Fixed positioning centers the popup over the whole page. */
+.modal {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modal-content {
+  background-color: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 14px;
+}
+
+.form-group label,
+.form-group legend {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.form-group fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.radio-label {
+  font-weight: normal !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.form-errors {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--color-expense);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.form-errors ul {
+  margin-left: 18px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* ---------- 9. Message toast & footer ---------- */
+/* Fixed toast in the bottom corner for "saved" feedback. */
+.message-box {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: var(--color-sidebar);
+  color: #ffffff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  z-index: 200;
+}
+
+.app-footer {
+  padding: 20px 28px;
+  color: var(--color-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* ---------- 10. Responsive rules ---------- */
+/* Tablet and smaller: sidebar becomes a top bar. */
+@media (max-width: 900px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .main-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 0;
+  }
+
+  .sidebar .btn-primary {
+    width: auto;
+    margin-top: 0;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+}
+
+/* Mobile: stack filters, shrink text, full-width buttons. */
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-group {
+    flex: 1 1 100%;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .transaction-table th,
+  .transaction-table td {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+  }
+}

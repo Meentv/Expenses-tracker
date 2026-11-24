@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance &amp; Expense Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ============ SIDEBAR / HEADER ============ -->
+  <header class="sidebar">
+    <h1 class="logo">💰 Finance Tracker</h1>
+    <p class="tagline">Track income &amp; expenses</p>
+
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#transactions">Transactions</a>
+      <a href="#exchange-rates">Exchange Rates</a>
+    </nav>
+
+    <button type="button" id="addTransactionBtn" class="btn btn-primary">
+      + Add Transaction
+    </button>
+  </header>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="main-content">
+
+    <!-- ===== Dashboard summary cards ===== -->
+    <section id="dashboard" aria-label="Financial summary">
+      <h2>Dashboard</h2>
+
+      <div class="cards-grid">
+        <article class="card card-income">
+          <h3>Total Income</h3>
+          <p class="card-value" id="totalIncome">0.00</p>
+        </article>
+
+        <article class="card card-expense">
+          <h3>Total Expenses</h3>
+          <p class="card-value" id="totalExpenses">0.00</p>
+        </article>
+
+        <article class="card card-balance">
+          <h3>Available Balance</h3>
+          <p class="card-value" id="availableBalance">0.00</p>
+        </article>
+
+        <article class="card">
+          <h3>Total Transactions</h3>
+          <p class="card-value" id="totalTransactions">0</p>
+        </article>
+
+        <article class="card">
+          <h3>Highest Expense</h3>
+          <p class="card-value" id="highestExpense">0.00</p>
+        </article>
+
+        <article class="card">
+          <h3>Lowest Expense</h3>
+          <p class="card-value" id="lowestExpense">0.00</p>
+        </article>
+
+        <article class="card">
+          <h3>Average Expense</h3>
+          <p class="card-value" id="averageExpense">0.00</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== Search & filters ===== -->
+    <section id="transactions" aria-label="Transactions">
+      <h2>Transactions</h2>
+
+      <form id="filterForm" class="filter-bar">
+        <div class="filter-group">
+          <label for="searchInput">Search by title</label>
+          <input type="search" id="searchInput" placeholder="e.g. Groceries">
+        </div>
+
+        <div class="filter-group">
+          <label for="filterType">Type</label>
+          <select id="filterType">
+            <option value="all">All types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filterCategory">Category</label>
+          <select id="filterCategory">
+            <option value="all">All categories</option>
+            <option value="Salary">Salary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Business">Business</option>
+            <option value="Gift">Gift</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Housing">Housing</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filterDate">Date</label>
+          <input type="date" id="filterDate">
+        </div>
+
+        <div class="filter-group">
+          <label for="filterFrom">From</label>
+          <input type="date" id="filterFrom">
+        </div>
+
+        <div class="filter-group">
+          <label for="filterTo">To</label>
+          <input type="date" id="filterTo">
+        </div>
+
+        <button type="button" id="clearFiltersBtn" class="btn btn-secondary">
+          Clear Filters
+        </button>
+      </form>
+
+      <!-- ===== Transaction table ===== -->
+      <div class="table-wrap">
+        <table class="transaction-table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Category</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactionTableBody">
+            <!-- Rows are added here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty state: shown when there are no transactions at all,
+           or when filters match nothing -->
+      <div id="emptyState" class="empty-state" hidden>
+        <p class="empty-icon">📭</p>
+        <p id="emptyStateText">No transactions yet. Click “Add Transaction” to record your first income or expense.</p>
+      </div>
+    </section>
+
+    <!-- ===== Exchange rates (API panel) ===== -->
+    <section id="exchange-rates" aria-label="Exchange rates">
+      <h2>Exchange Rates</h2>
+      <p class="section-note">Live rates from the Open ER-API (1 USD = …).</p>
+
+      <div id="ratesPanel" class="rates-panel">
+        <p id="ratesLoading" class="rates-loading">Loading rates…</p>
+
+        <div id="ratesContent" hidden>
+          <ul class="rates-list">
+            <li><span>Nigerian Naira (NGN)</span> <strong id="rateNGN">—</strong></li>
+            <li><span>British Pound (GBP)</span> <strong id="rateGBP">—</strong></li>
+            <li><span>Euro (EUR)</span> <strong id="rateEUR">—</strong></li>
+          </ul>
+          <p class="rates-updated" id="ratesUpdated"></p>
+        </div>
+
+        <p id="ratesError" class="rates-error" hidden>
+          ⚠️ Could not load exchange rates right now. Please check your internet connection and try again later. Your transactions are not affected.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ ADD / EDIT MODAL ============ -->
+  <div id="transactionModal" class="modal" hidden>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle">Add Transaction</h2>
+
+      <form id="transactionForm" novalidate>
+        <!-- Holds the id when editing; empty when adding -->
+        <input type="hidden" id="editingId" value="">
+
+        <div class="form-group">
+          <label for="titleInput">Title *</label>
+          <input type="text" id="titleInput" placeholder="e.g. Monthly Salary" required>
+        </div>
+
+        <div class="form-group">
+          <label for="amountInput">Amount *</label>
+          <input type="number" id="amountInput" placeholder="e.g. 50000" min="0" step="0.01" required>
+        </div>
+
+        <fieldset class="form-group">
+          <legend>Type *</legend>
+          <label class="radio-label">
+            <input type="radio" name="type" value="income"> Income
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="type" value="expense"> Expense
+          </label>
+        </fieldset>
+
+        <div class="form-group">
+          <label for="categorySelect">Category *</label>
+          <select id="categorySelect" required>
+            <option value="">Select a category…</option>
+            <option value="Salary">Salary</option>
+            <option value="Freelance">Freelance</option>
+            <option value="Business">Business</option>
+            <option value="Gift">Gift</option>
+            <option value="Food">Food</option>
+            <option value="Transport">Transport</option>
+            <option value="Housing">Housing</option>
+            <option value="Utilities">Utilities</option>
+            <option value="Entertainment">Entertainment</option>
+            <option value="Health">Health</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Education">Education</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="dateInput">Date *</label>
+          <input type="date" id="dateInput" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notesInput">Notes (optional)</label>
+          <input type="text" id="notesInput" placeholder="Any extra detail…">
+        </div>
+
+        <div id="formErrors" class="form-errors" hidden></div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary" id="saveTransactionBtn">Save Transaction</button>
+          <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Small toast message for feedback (e.g. "Transaction saved") -->
+  <div id="messageBox" class="message-box" hidden></div>
+
+  <footer class="app-footer">
+    <p>Personal Finance &amp; Expense Tracker — Built with HTML, CSS &amp; Vanilla JavaScript.</p>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
