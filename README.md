@@ -23,7 +23,9 @@ No React, no TypeScript, no backend — exactly as the assignment requires.
 
 ## Features
 
-- **Dashboard:** total income, total expenses, available balance, transaction count, highest/lowest/average expense, recent transactions (newest first). All figures are calculated from real records — nothing is hardcoded.
+- **Dashboard:** total balance, total income, total expenses, transaction count, highest/lowest/average expense, recent transactions (newest first). All figures are calculated from real records — nothing is hardcoded.
+- **Analytics charts (real data, no library):** Income vs Expenses monthly bars (last 6 months) and Expense Breakdown by Category bars, with empty states when there is no data.
+- **Quick actions:** Add Income / Add Expense buttons that open the form with the type pre-selected; sidebar Income/Expenses links apply the matching filter.
 - **Transactions:** add, edit, and delete income/expense records with title, amount, type, category, date, and optional notes.
 - **Search & filtering:** by title, type, category, exact date, and date range — filters combine, with a Clear Filters button.
 - **Form validation:** empty titles, non-positive amounts, missing type/category, and invalid dates are rejected with clear messages.
@@ -102,12 +104,13 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 ### Page structure
 
 - **`<body>`** — Contains all visible page content. Everything from the sidebar to the footer sits inside it.
-- **`<header class="sidebar">`** — The introductory/top section: logo, tagline, navigation, Add button. Used as the sidebar on desktop.
-- **`<h1>`** — The main page heading ("💰 Finance Tracker"). Only one `<h1>` per page — the most important heading.
-- **`<nav>`** — Contains navigation links. Used for the Dashboard / Transactions / Exchange Rates links. `aria-label="Main navigation"` helps screen readers.
-- **`<main>`** — Holds the main content (dashboard, transactions, rates). One `<main>` per page; helps accessibility and SEO.
-- **`<section>`** — Groups related content with a heading. Used 3 times: `#dashboard`, `#transactions`, `#exchange-rates`.
-- **`<article>`** — A self-contained piece of content. Used 7 times for the summary cards (each card stands alone).
+- **`<aside class="sidebar">`** — Side content: brand/logo, navigation, Add Transaction button. Fixed on desktop; becomes an off-canvas drawer on mobile (toggled by the menu button).
+- **`<header class="topbar">`** — The top bar: mobile menu button, page title ("Dashboard"), today's date, Add button. Sticky at the top of the content area.
+- **`<h1>`** — The main page heading ("Dashboard" in the top bar). Only one `<h1>` per page — the most important heading.
+- **`<nav>`** — Contains navigation links/buttons. Used for Dashboard, Transactions, Income, Expenses, Categories, Exchange Rates, Settings. `aria-label="Main navigation"` helps screen readers.
+- **`<main>`** — Holds the main content (overview, analytics, transactions, rates, settings). One `<main>` per page; helps accessibility and SEO.
+- **`<section>`** — Groups related content with a heading. Used 5 times: `#dashboard`, `#analytics`, `#transactions`, `#exchange-rates`, `#settings`.
+- **`<article>`** — A self-contained piece of content. Used 7 times for the summary cards (3 overview + 4 stats; each card stands alone).
 - **`<div>`** — A generic container for layout/styling. Used for the cards grid, filter groups, table wrapper, modal, and message box.
 - **`<footer>`** — The bottom section with the credit line. At the end of `index.html`.
 
@@ -121,7 +124,11 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 
 ### Links and buttons
 
-- **`<a href="#dashboard">`** — A hyperlink. `href` with `#` scrolls to the element with that `id` on the same page. Used in the nav (3 links).
+- **`<a href="#dashboard">`** — A hyperlink. `href` with `#` scrolls to the element with that `id` on the same page. Used in the nav (Dashboard, Transactions, Categories, Exchange Rates, Settings) and the "View All" button.
+- **`<svg viewBox="0 0 24 24">`** — Inline vector icon (scalable graphic). Used 7 times for sidebar nav icons. `viewBox` defines the coordinate grid; `aria-hidden="true"` hides decorative icons from screen readers.
+- **`<path d="M4 6h16">`** — An SVG shape drawn with commands (lines/curves). Used inside `<svg>` for list, arrow, chart, and gear icons.
+- **`<rect x="3" y="3" width="7" height="7">`** — An SVG rectangle. Used inside the Dashboard grid icon (4 small squares).
+- **`<circle cx="12" cy="12" r="3">`** — An SVG circle. Used inside the Settings gear icon.
 - **`<button type="button">`** — An interactive button. Used for "Add Transaction", "Clear Filters", "Cancel", and "Save Transaction". `type="button"` prevents accidental form submission; the Save button uses `type="submit"`.
 
 ### Forms
@@ -173,7 +180,9 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | `charset` / `content` | Meta encoding / viewport settings | `<meta>` tags in `<head>` |
 | `lang` | Page language | `<html lang="en">` |
 | `rel` | Type of linked resource | CSS `<link rel="stylesheet">` |
-| `role` / `aria-*` | Accessibility roles/labels for screen readers | Modal dialog, nav, sections |
+| `role` / `aria-*` | Accessibility roles/labels for screen readers | Modal dialog, nav, sections, decorative SVGs (`aria-hidden`) |
+| `viewBox` | SVG coordinate grid for scaling icons | All 7 sidebar `<svg>` icons |
+| `data-nav-filter` | Custom data JS reads via `dataset` | Sidebar Income/Expenses buttons |
 | `data-*` (`data-action`, `data-id`) | Custom data JS can read via `dataset` | Edit/Delete buttons created by `ui.js` |
 
 ---
@@ -207,6 +216,8 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | | `findHighestExpense(list)` | Largest expense amount (0 if none) |
 | | `findLowestExpense(list)` | Smallest expense amount (0 if none) |
 | | `calculateAverageExpense(list)` | Mean of expenses (0 if none — no divide-by-zero) |
+| | `getMonthlyTotals(list)` | Last 6 months of `{ month, income, expense }` for the bar chart |
+| | `getCategoryTotals(list)` | Expense totals per category, largest first, for the breakdown chart |
 | `transactions.js` | `addTransaction(data)` | Creates an object with a unique id, pushes it to the array |
 | | `editTransaction(id, data)` | Finds by id and overwrites its fields |
 | | `deleteTransaction(id)` | Finds index by id and removes it with `splice()` |
@@ -217,6 +228,7 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | | `loadTransactions()` | `getItem` + `JSON.parse` inside `try/catch` |
 | `validation.js` | `validateTransaction(data)` | Returns a list of error messages (empty = valid) |
 | `ui.js` | `renderDashboard()` | Calls all 7 calculations, writes them into the cards |
+| | `renderCharts()` | Draws monthly + category charts from real data (empty states if none) |
 | | `renderTransactions(list, msg)` | Builds table rows (green + / red − amounts) |
 | | `openAddModal()` / `openEditModal(tx)` / `closeModal()` | Modal show/hide + form filling |
 | | `showRatesLoading()` / `showRates()` / `showRatesError()` | Exchange panel states |
@@ -226,6 +238,8 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | | `handleFormSubmit()` | Validate → add/edit → save → re-draw |
 | | `handleTableClick()` | Edit/Delete via event delegation |
 | | `readFilters()` / `applyFilters()` | Read filter bar, re-draw filtered table |
+| | `showToday()` | Fills the top-bar date |
+| | Quick-action / nav / menu / clear-all handlers | Pre-select type, apply sidebar filters, toggle mobile drawer, clear data |
 | | `loadRates()` | `try/catch` wrapper around the API call |
 
 **Flow for "Add Transaction":** click Add → `main.js` opens modal (`ui.js`) → submit → `validation.js` checks → `transactions.js` adds to `data.js` array → `storage.js` saves → `calculations.js` computes totals → `ui.js` re-renders. The dashboard is always calculated from real records.

@@ -8,185 +8,282 @@
 </head>
 <body>
 
-  <!-- ============ SIDEBAR / HEADER ============ -->
-  <header class="sidebar">
-    <h1 class="logo">💰 Finance Tracker</h1>
-    <p class="tagline">Track income &amp; expenses</p>
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      <div>
+        <p class="brand-name">Finance Tracker</p>
+        <p class="brand-sub">Personal finance</p>
+      </div>
+    </div>
 
     <nav class="main-nav" aria-label="Main navigation">
-      <a href="#dashboard">Dashboard</a>
-      <a href="#transactions">Transactions</a>
-      <a href="#exchange-rates">Exchange Rates</a>
+      <p class="nav-heading">Menu</p>
+      <a href="#dashboard" class="nav-link nav-active">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+        Dashboard
+      </a>
+      <a href="#transactions" class="nav-link">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+        Transactions
+      </a>
+      <button type="button" class="nav-link" data-nav-filter="income">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"></path></svg>
+        Income
+      </button>
+      <button type="button" class="nav-link" data-nav-filter="expense">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 20V8m0 0l-5 5m5-5l5 5M5 4h14"></path></svg>
+        Expenses
+      </button>
+      <a href="#analytics" class="nav-link">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20V10m6 10V4m6 16v-7m4 7H2"></path></svg>
+        Categories
+      </a>
+      <a href="#exchange-rates" class="nav-link">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 8h13m0 0l-3-3m3 3l-3 3M20 16H7m0 0l3 3m-3-3l3-3"></path></svg>
+        Exchange Rates
+      </a>
+      <a href="#settings" class="nav-link">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10l2 2M19 5l-2 2M7 17l-2 2"></path></svg>
+        Settings
+      </a>
     </nav>
 
-    <button type="button" id="addTransactionBtn" class="btn btn-primary">
+    <button type="button" id="addTransactionBtn" class="btn btn-primary btn-block">
       + Add Transaction
     </button>
-  </header>
+  </aside>
 
-  <!-- ============ MAIN CONTENT ============ -->
-  <main class="main-content">
+  <!-- ============ PAGE (top bar + content) ============ -->
+  <div class="page">
 
-    <!-- ===== Dashboard summary cards ===== -->
-    <section id="dashboard" aria-label="Financial summary">
-      <h2>Dashboard</h2>
-
-      <div class="cards-grid">
-        <article class="card card-income">
-          <h3>Total Income</h3>
-          <p class="card-value" id="totalIncome">0.00</p>
-        </article>
-
-        <article class="card card-expense">
-          <h3>Total Expenses</h3>
-          <p class="card-value" id="totalExpenses">0.00</p>
-        </article>
-
-        <article class="card card-balance">
-          <h3>Available Balance</h3>
-          <p class="card-value" id="availableBalance">0.00</p>
-        </article>
-
-        <article class="card">
-          <h3>Total Transactions</h3>
-          <p class="card-value" id="totalTransactions">0</p>
-        </article>
-
-        <article class="card">
-          <h3>Highest Expense</h3>
-          <p class="card-value" id="highestExpense">0.00</p>
-        </article>
-
-        <article class="card">
-          <h3>Lowest Expense</h3>
-          <p class="card-value" id="lowestExpense">0.00</p>
-        </article>
-
-        <article class="card">
-          <h3>Average Expense</h3>
-          <p class="card-value" id="averageExpense">0.00</p>
-        </article>
+    <header class="topbar">
+      <button type="button" id="menuBtn" class="icon-btn" aria-label="Open menu">☰</button>
+      <div class="topbar-title">
+        <h1>Dashboard</h1>
+        <p id="todayDate" class="topbar-date"></p>
       </div>
-    </section>
+      <button type="button" id="topAddBtn" class="btn btn-primary">+ Add</button>
+    </header>
 
-    <!-- ===== Search & filters ===== -->
-    <section id="transactions" aria-label="Transactions">
-      <h2>Transactions</h2>
+    <main class="main-content">
 
-      <form id="filterForm" class="filter-bar">
-        <div class="filter-group">
-          <label for="searchInput">Search by title</label>
-          <input type="search" id="searchInput" placeholder="e.g. Groceries">
+      <!-- ===== Dashboard overview ===== -->
+      <section id="dashboard" aria-label="Financial summary">
+        <div class="welcome">
+          <div>
+            <h2>Overview</h2>
+            <p class="section-note">Your money at a glance. All figures update automatically.</p>
+          </div>
+          <div class="quick-actions">
+            <button type="button" id="addIncomeBtn" class="btn btn-income">+ Add Income</button>
+            <button type="button" id="addExpenseBtn" class="btn btn-expense">+ Add Expense</button>
+            <a href="#transactions" class="btn btn-secondary">View All</a>
+          </div>
         </div>
 
-        <div class="filter-group">
-          <label for="filterType">Type</label>
-          <select id="filterType">
-            <option value="all">All types</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
+        <div class="overview-grid">
+          <article class="card card-balance">
+            <h3>Total Balance</h3>
+            <p class="card-value" id="availableBalance">0.00</p>
+            <p class="card-note">Income minus expenses</p>
+          </article>
+
+          <article class="card card-income">
+            <h3>Total Income</h3>
+            <p class="card-value" id="totalIncome">0.00</p>
+            <p class="card-note">Money received</p>
+          </article>
+
+          <article class="card card-expense">
+            <h3>Total Expenses</h3>
+            <p class="card-value" id="totalExpenses">0.00</p>
+            <p class="card-note">Money spent</p>
+          </article>
         </div>
 
-        <div class="filter-group">
-          <label for="filterCategory">Category</label>
-          <select id="filterCategory">
-            <option value="all">All categories</option>
-            <option value="Salary">Salary</option>
-            <option value="Freelance">Freelance</option>
-            <option value="Business">Business</option>
-            <option value="Gift">Gift</option>
-            <option value="Food">Food</option>
-            <option value="Transport">Transport</option>
-            <option value="Housing">Housing</option>
-            <option value="Utilities">Utilities</option>
-            <option value="Entertainment">Entertainment</option>
-            <option value="Health">Health</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Education">Education</option>
-            <option value="Other">Other</option>
-          </select>
+        <div class="stats-grid">
+          <article class="stat">
+            <h3>Total Transactions</h3>
+            <p class="stat-value" id="totalTransactions">0</p>
+          </article>
+          <article class="stat">
+            <h3>Highest Expense</h3>
+            <p class="stat-value" id="highestExpense">0.00</p>
+          </article>
+          <article class="stat">
+            <h3>Lowest Expense</h3>
+            <p class="stat-value" id="lowestExpense">0.00</p>
+          </article>
+          <article class="stat">
+            <h3>Average Expense</h3>
+            <p class="stat-value" id="averageExpense">0.00</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ===== Analytics (charts from real data) ===== -->
+      <section id="analytics" aria-label="Financial analytics">
+        <h2>Analytics</h2>
+
+        <div class="analytics-grid">
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Income vs Expenses</h3>
+              <div class="legend">
+                <span class="legend-item"><span class="legend-dot legend-income"></span>Income</span>
+                <span class="legend-item"><span class="legend-dot legend-expense"></span>Expenses</span>
+              </div>
+            </div>
+            <p class="section-note">Monthly totals from your transactions (last 6 months).</p>
+            <div id="monthlyChart" class="monthly-chart"></div>
+            <p id="monthlyEmpty" class="chart-empty" hidden>No transaction data yet. Add income or expenses to see the chart.</p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h3>Expense Breakdown by Category</h3>
+            </div>
+            <p class="section-note">Where your money goes, largest first.</p>
+            <div id="categoryChart" class="category-chart"></div>
+            <p id="categoryEmpty" class="chart-empty" hidden>No expense data yet. Add an expense to see the breakdown.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Search & filters + table ===== -->
+      <section id="transactions" aria-label="Transactions">
+        <h2>Transactions</h2>
+
+        <form id="filterForm" class="filter-bar">
+          <div class="filter-group filter-search">
+            <label for="searchInput">Search by title</label>
+            <input type="search" id="searchInput" placeholder="e.g. Groceries">
+          </div>
+
+          <div class="filter-group">
+            <label for="filterType">Type</label>
+            <select id="filterType">
+              <option value="all">All types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterCategory">Category</label>
+            <select id="filterCategory">
+              <option value="all">All categories</option>
+              <option value="Salary">Salary</option>
+              <option value="Freelance">Freelance</option>
+              <option value="Business">Business</option>
+              <option value="Gift">Gift</option>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Housing">Housing</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Health">Health</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Education">Education</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="filterDate">Date</label>
+            <input type="date" id="filterDate">
+          </div>
+
+          <div class="filter-group">
+            <label for="filterFrom">From</label>
+            <input type="date" id="filterFrom">
+          </div>
+
+          <div class="filter-group">
+            <label for="filterTo">To</label>
+            <input type="date" id="filterTo">
+          </div>
+
+          <button type="button" id="clearFiltersBtn" class="btn btn-secondary">
+            Clear Filters
+          </button>
+        </form>
+
+        <div class="table-wrap">
+          <table class="transaction-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+              <!-- Rows are added here by JavaScript -->
+            </tbody>
+          </table>
         </div>
 
-        <div class="filter-group">
-          <label for="filterDate">Date</label>
-          <input type="date" id="filterDate">
+        <div id="emptyState" class="empty-state" hidden>
+          <p class="empty-icon">📭</p>
+          <p id="emptyStateText">No transactions yet. Click “Add Transaction” to record your first income or expense.</p>
         </div>
+      </section>
 
-        <div class="filter-group">
-          <label for="filterFrom">From</label>
-          <input type="date" id="filterFrom">
+      <!-- ===== Exchange rates (API panel) ===== -->
+      <section id="exchange-rates" aria-label="Exchange rates">
+        <h2>Exchange Rates</h2>
+        <p class="section-note">Live rates from the Open ER-API (1 USD = …).</p>
+
+        <div id="ratesPanel" class="rates-panel">
+          <p id="ratesLoading" class="rates-loading">Loading rates…</p>
+
+          <div id="ratesContent" hidden>
+            <ul class="rates-list">
+              <li><span>Nigerian Naira (NGN)</span> <strong id="rateNGN">—</strong></li>
+              <li><span>British Pound (GBP)</span> <strong id="rateGBP">—</strong></li>
+              <li><span>Euro (EUR)</span> <strong id="rateEUR">—</strong></li>
+            </ul>
+            <p class="rates-updated" id="ratesUpdated"></p>
+          </div>
+
+          <p id="ratesError" class="rates-error" hidden>
+            ⚠️ Could not load exchange rates right now. Please check your internet connection and try again later. Your transactions are not affected.
+          </p>
         </div>
+      </section>
 
-        <div class="filter-group">
-          <label for="filterTo">To</label>
-          <input type="date" id="filterTo">
+      <!-- ===== Settings (functional: clear all data) ===== -->
+      <section id="settings" aria-label="Settings">
+        <h2>Settings</h2>
+        <div class="panel settings-panel">
+          <h3>Data</h3>
+          <p class="section-note">Your transactions are stored only in this browser (localStorage). Clearing removes them permanently.</p>
+          <button type="button" id="clearAllBtn" class="btn btn-danger">Clear All Transactions</button>
         </div>
+      </section>
 
-        <button type="button" id="clearFiltersBtn" class="btn btn-secondary">
-          Clear Filters
-        </button>
-      </form>
+    </main>
 
-      <!-- ===== Transaction table ===== -->
-      <div class="table-wrap">
-        <table class="transaction-table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Category</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Notes</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="transactionTableBody">
-            <!-- Rows are added here by JavaScript -->
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Empty state: shown when there are no transactions at all,
-           or when filters match nothing -->
-      <div id="emptyState" class="empty-state" hidden>
-        <p class="empty-icon">📭</p>
-        <p id="emptyStateText">No transactions yet. Click “Add Transaction” to record your first income or expense.</p>
-      </div>
-    </section>
-
-    <!-- ===== Exchange rates (API panel) ===== -->
-    <section id="exchange-rates" aria-label="Exchange rates">
-      <h2>Exchange Rates</h2>
-      <p class="section-note">Live rates from the Open ER-API (1 USD = …).</p>
-
-      <div id="ratesPanel" class="rates-panel">
-        <p id="ratesLoading" class="rates-loading">Loading rates…</p>
-
-        <div id="ratesContent" hidden>
-          <ul class="rates-list">
-            <li><span>Nigerian Naira (NGN)</span> <strong id="rateNGN">—</strong></li>
-            <li><span>British Pound (GBP)</span> <strong id="rateGBP">—</strong></li>
-            <li><span>Euro (EUR)</span> <strong id="rateEUR">—</strong></li>
-          </ul>
-          <p class="rates-updated" id="ratesUpdated"></p>
-        </div>
-
-        <p id="ratesError" class="rates-error" hidden>
-          ⚠️ Could not load exchange rates right now. Please check your internet connection and try again later. Your transactions are not affected.
-        </p>
-      </div>
-    </section>
-
-  </main>
+    <footer class="app-footer">
+      <p>Personal Finance &amp; Expense Tracker — Built with HTML, CSS &amp; Vanilla JavaScript.</p>
+    </footer>
+  </div>
 
   <!-- ============ ADD / EDIT MODAL ============ -->
   <div id="transactionModal" class="modal" hidden>
     <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle">Add Transaction</h2>
+      <div class="modal-head">
+        <h2 id="modalTitle">Add Transaction</h2>
+        <button type="button" id="closeModalBtn" class="icon-btn" aria-label="Close">✕</button>
+      </div>
 
       <form id="transactionForm" novalidate>
-        <!-- Holds the id when editing; empty when adding -->
         <input type="hidden" id="editingId" value="">
 
         <div class="form-group">
@@ -249,12 +346,7 @@
     </div>
   </div>
 
-  <!-- Small toast message for feedback (e.g. "Transaction saved") -->
   <div id="messageBox" class="message-box" hidden></div>
-
-  <footer class="app-footer">
-    <p>Personal Finance &amp; Expense Tracker — Built with HTML, CSS &amp; Vanilla JavaScript.</p>
-  </footer>
 
   <script type="module" src="js/main.js"></script>
 </body>

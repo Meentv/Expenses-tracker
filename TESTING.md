@@ -66,6 +66,23 @@ No filters → 4; search `salary` → 1; search `SALARY` (uppercase) → 1 (case
 
 Browser behaviour (to verify in Stage 11): panel shows "Loading rates…" then rates + update time; offline/blocked API shows fallback message; tracker still works.
 
+## Redesign — chart calculations (14 checks, all PASS)
+
+| # | Test | Expected | Result |
+|---|------|----------|--------|
+| 1 | Monthly totals: 2 months present | 2 | ✅ PASS |
+| 2 | Chronological order (oldest first) | 2026-10 first | ✅ PASS |
+| 3 | Oct income / expense | 40000 / 10000 | ✅ PASS |
+| 4 | Nov income / expense | 100000 / 30000 | ✅ PASS |
+| 5 | Empty list → no months | 0 | ✅ PASS |
+| 6 | Category totals: expenses only | 2 categories | ✅ PASS |
+| 7 | Largest first (Food 35000) | Food first | ✅ PASS |
+| 8 | Income-only → no categories | 0 | ✅ PASS |
+| 9 | Balance still correct after additions | 100000 | ✅ PASS |
+| 10 | All 40 original element IDs preserved in new HTML | 40/40 | ✅ PASS |
+
+**Redesign notes:** Charts are pure CSS bars (no library — assignment forbids unnecessary libs) fed by `getMonthlyTotals()` / `getCategoryTotals()`. Empty data shows chart empty states, never fake figures. Sidebar Income/Expenses apply real filters; Settings Clear-All actually clears localStorage. No fake notification/profile UI (no backend exists). TikTok reference was inaccessible (HTTP 400) — redesign follows established fintech patterns; student may share screenshots for further refinement.
+
 ## Manual browser tests — STUDENT MUST PERFORM THESE (Stage 11)
 
 Logic tests above are automated and passing. The following browser tests **cannot be automated here** and must be performed by the student in the running app (Live Server). Tick each one only after actually doing it, and note the observed result:

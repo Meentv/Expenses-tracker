@@ -1,7 +1,7 @@
 # STAGE 1 — Implementation Plan
 ## Personal Finance & Expense Tracker (Craft Innovation Hub)
 
-**Status:** ✅ Stages 1–12 complete (all features built; 32 logic checks passing; README, AI journal, presentation guide written). Remaining student actions: 10-scenario browser pass + real screenshots (see TESTING.md).
+**Status:** ✅ Stages 1–12 + full redesign complete (46 logic checks passing; README updated for new tags/charts). Remaining student actions: 10-scenario browser pass + real screenshots (see TESTING.md).
 **Deadline:** Tomorrow — this plan is compressed to fit that, without skipping mandatory features.
 
 ---

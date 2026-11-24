@@ -1,221 +1,571 @@
 /* ============================================================
-   style.css — Personal Finance & Expense Tracker
+   style.css — Personal Finance & Expense Tracker (redesign)
    ------------------------------------------------------------
-   Responsibility: ALL visual styling.
-   Sections in this file:
-     1. Variables & reset
-     2. Page layout (sidebar + main)
-     3. Buttons
-     4. Summary cards
-     5. Filter bar
-     6. Transaction table & empty state
-     7. Exchange rates panel
-     8. Modal form
-     9. Message toast & footer
-    10. Responsive rules (tablet & mobile)
+   Design system:
+     - One spacing scale, one radius, one shadow, one palette.
+     - Layout: sidebar + page (top bar + content).
+     - Sections: buttons, cards, charts, filters, table,
+       rates, settings, modal, toast, responsive rules.
    ============================================================ */
 
-/* ---------- 1. Variables & reset ---------- */
-/* CSS variables store reusable values. Change a color once here
-   and it updates everywhere. */
+/* ---------- 1. Design tokens & reset ---------- */
 :root {
-  --color-bg: #f4f6f8;
-  --color-surface: #ffffff;
-  --color-text: #1f2937;
-  --color-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-primary: #0f766e;
-  --color-primary-dark: #115e59;
-  --color-income: #16a34a;
-  --color-expense: #dc2626;
-  --color-sidebar: #111827;
-  --color-sidebar-text: #e5e7eb;
-  --radius: 12px;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #0f766e;
+  --primary-dark: #115e59;
+  --income: #16a34a;
+  --expense: #dc2626;
+  --danger: #b91c1c;
+  --sidebar: #0f172a;
+  --sidebar-soft: #1e293b;
+  --sidebar-text: #cbd5e1;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.05);
 }
 
-/* Reset: remove default margins so spacing is predictable. */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* The hidden attribute must always win (used for modal,
-   empty state, API states). */
 [hidden] {
   display: none !important;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
   line-height: 1.5;
-  /* Flexbox: sidebar on the left, main content on the right. */
   display: flex;
   min-height: 100vh;
 }
 
-/* ---------- 2. Page layout (sidebar + main) ---------- */
+/* ---------- 2. Sidebar ---------- */
 .sidebar {
-  width: 260px;
+  width: 264px;
   flex-shrink: 0;
-  background-color: var(--color-sidebar);
-  color: var(--color-sidebar-text);
-  padding: 24px 20px;
-  /* Sticky keeps the sidebar visible while the page scrolls. */
+  background-color: var(--sidebar);
+  color: var(--sidebar-text);
+  padding: 22px 16px;
   position: sticky;
   top: 0;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+  z-index: 50;
 }
 
-.logo {
-  font-size: 1.4rem;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
 }
 
-.tagline {
-  color: #9ca3af;
-  font-size: 0.9rem;
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.brand-sub {
+  color: #94a3b8;
+  font-size: 0.8rem;
 }
 
 .main-nav {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  margin-top: 12px;
 }
 
-.main-nav a {
-  color: var(--color-sidebar-text);
+.nav-heading {
+  color: #64748b;
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 12px 4px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--sidebar-text);
   text-decoration: none;
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-/* Hover effect: subtle background change when the mouse is over. */
-.main-nav a:hover {
-  background-color: #1f2937;
-}
-
-.main-content {
-  flex: 1;
-  padding: 28px;
-  max-width: 1100px;
-}
-
-.main-content section {
-  margin-bottom: 36px;
-}
-
-.main-content h2 {
-  font-size: 1.5rem;
-  margin-bottom: 16px;
-}
-
-.section-note {
-  color: var(--color-muted);
-  margin-bottom: 12px;
-}
-
-/* ---------- 3. Buttons ---------- */
-.btn {
   font-family: inherit;
-  font-size: 0.95rem;
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: 1px solid transparent;
+  font-size: 0.93rem;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  width: 100%;
 }
 
-.btn-primary {
-  background-color: var(--color-primary);
+.nav-link svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.nav-link:hover {
+  background-color: var(--sidebar-soft);
   color: #ffffff;
 }
 
-.btn-primary:hover {
-  background-color: var(--color-primary-dark);
+.nav-active {
+  background-color: var(--primary);
+  color: #ffffff;
 }
 
-.btn-secondary {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  border-color: var(--color-border);
-}
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-}
-
-.sidebar .btn-primary {
+.sidebar .btn-block {
   margin-top: auto;
   width: 100%;
 }
 
-/* ---------- 4. Summary cards ---------- */
-/* CSS Grid: cards flow into as many columns as fit. */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+/* ---------- 3. Page & top bar ---------- */
+.page {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background-color: rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
   gap: 16px;
 }
 
+.topbar h1 {
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.topbar-date {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.topbar .btn {
+  margin-left: auto;
+}
+
+.icon-btn {
+  font-family: inherit;
+  font-size: 1.05rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.main-content {
+  padding: 28px;
+  max-width: 1120px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.main-content section {
+  margin-bottom: 40px;
+  scroll-margin-top: 84px;
+}
+
+.main-content h2 {
+  font-size: 1.35rem;
+  margin-bottom: 14px;
+}
+
+.section-note {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-bottom: 14px;
+}
+
+/* ---------- 4. Buttons ---------- */
+.btn {
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-secondary {
+  background-color: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  background-color: #f1f5f9;
+}
+
+.btn-income {
+  background-color: var(--income);
+  color: #ffffff;
+}
+
+.btn-income:hover {
+  background-color: #15803d;
+}
+
+.btn-expense {
+  background-color: var(--surface);
+  color: var(--expense);
+  border-color: #fecaca;
+}
+
+.btn-expense:hover {
+  background-color: #fef2f2;
+}
+
+.btn-danger {
+  background-color: var(--danger);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #991b1b;
+}
+
+/* ---------- 5. Welcome & overview cards ---------- */
+.welcome {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.welcome h2 {
+  margin-bottom: 4px;
+}
+
+.welcome .section-note {
+  margin-bottom: 0;
+}
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
 .card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 18px;
+  padding: 20px;
 }
 
 .card h3 {
   font-size: 0.85rem;
-  color: var(--color-muted);
-  font-weight: normal;
+  color: var(--muted);
+  font-weight: 600;
   margin-bottom: 8px;
 }
 
 .card-value {
-  font-size: 1.5rem;
-  font-weight: bold;
+  font-size: 1.7rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-/* Color accents so income/expense/balance are easy to scan. */
+.card-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
+
 .card-income .card-value {
-  color: var(--color-income);
+  color: var(--income);
 }
 
 .card-expense .card-value {
-  color: var(--color-expense);
+  color: var(--expense);
 }
 
 .card-balance {
-  background-color: var(--color-sidebar);
-  border-color: var(--color-sidebar);
+  background-color: var(--sidebar);
+  border-color: var(--sidebar);
 }
 
 .card-balance h3 {
-  color: #9ca3af;
+  color: #94a3b8;
 }
 
 .card-balance .card-value {
   color: #ffffff;
 }
 
-/* ---------- 5. Filter bar ---------- */
+.card-balance .card-note {
+  color: #94a3b8;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+}
+
+.stat h3 {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+/* ---------- 6. Analytics panels & charts ---------- */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+}
+
+.panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panel h3 {
+  font-size: 1rem;
+}
+
+.legend {
+  display: flex;
+  gap: 14px;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-income {
+  background-color: var(--income);
+}
+
+.legend-expense {
+  background-color: var(--expense);
+}
+
+.chart-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 28px 12px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+
+/* Monthly bars: each month is a column with two bars. */
+.monthly-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  height: 220px;
+  padding-top: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.month-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.month-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 170px;
+  width: 100%;
+  justify-content: center;
+}
+
+.bar {
+  width: 16px;
+  border-radius: 5px 5px 0 0;
+  min-height: 3px;
+}
+
+.bar-income {
+  background-color: var(--income);
+}
+
+.bar-expense {
+  background-color: var(--expense);
+}
+
+.month-label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Category bars: label + track + amount per row. */
+.category-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 6px;
+}
+
+.category-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 90px;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+
+.category-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-track {
+  background-color: #f1f5f9;
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.category-fill {
+  background-color: var(--expense);
+  height: 100%;
+  border-radius: 99px;
+  min-width: 4px;
+}
+
+.category-amount {
+  text-align: right;
+  font-weight: 700;
+}
+
+/* ---------- 7. Filter bar ---------- */
 .filter-bar {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 16px;
   margin-bottom: 20px;
-  /* Flexbox with wrap: filters sit in a row on desktop
-     and wrap onto new lines when space runs out. */
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -226,12 +576,17 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  flex: 1 1 150px;
+  flex: 1 1 140px;
+}
+
+.filter-search {
+  flex: 2 1 220px;
 }
 
 .filter-group label {
-  font-size: 0.85rem;
-  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
 }
 
 .filter-group input,
@@ -239,31 +594,28 @@ body {
 .form-group input,
 .form-group select {
   font-family: inherit;
-  font-size: 0.95rem;
-  padding: 9px 10px;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  font-size: 0.93rem;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--text);
   width: 100%;
 }
 
-/* Focus state: clear outline so keyboard users can see where they are. */
 .filter-group input:focus,
 .filter-group select:focus,
 .form-group input:focus,
 .form-group select:focus {
-  outline: 2px solid var(--color-primary);
+  outline: 2px solid var(--primary);
   outline-offset: 1px;
 }
 
-/* ---------- 6. Transaction table & empty state ---------- */
-/* Wrapper allows horizontal scrolling on small screens
-   instead of breaking the layout. */
+/* ---------- 8. Transaction table & empty state ---------- */
 .table-wrap {
   overflow-x: auto;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
@@ -271,35 +623,41 @@ body {
 .transaction-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.95rem;
+  font-size: 0.93rem;
 }
 
 .transaction-table th,
 .transaction-table td {
   text-align: left;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--color-border);
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
 }
 
 .transaction-table th {
-  color: var(--color-muted);
-  font-weight: normal;
-  font-size: 0.85rem;
-  background-color: #f9fafb;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: #f8fafc;
 }
 
-.transaction-table tr:hover {
-  background-color: #f9fafb;
+.transaction-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.transaction-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .amount-income {
-  color: var(--color-income);
-  font-weight: bold;
+  color: var(--income);
+  font-weight: 700;
 }
 
 .amount-expense {
-  color: var(--color-expense);
-  font-weight: bold;
+  color: var(--expense);
+  font-weight: 700;
 }
 
 .row-actions {
@@ -309,25 +667,26 @@ body {
 
 .row-actions button {
   font-family: inherit;
-  font-size: 0.85rem;
-  padding: 6px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
   cursor: pointer;
 }
 
 .row-actions button:hover {
-  background-color: #f3f4f6;
+  background-color: #f1f5f9;
 }
 
 .empty-state {
   text-align: center;
-  padding: 40px 20px;
-  background-color: var(--color-surface);
-  border: 1px dashed var(--color-border);
+  padding: 44px 20px;
+  background-color: var(--surface);
+  border: 1px dashed var(--border);
   border-radius: var(--radius);
-  color: var(--color-muted);
+  color: var(--muted);
 }
 
 .empty-icon {
@@ -335,18 +694,18 @@ body {
   margin-bottom: 8px;
 }
 
-/* ---------- 7. Exchange rates panel ---------- */
+/* ---------- 9. Exchange rates & settings ---------- */
 .rates-panel {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 18px;
-  max-width: 560px;
+  padding: 20px;
+  max-width: 600px;
 }
 
 .rates-loading {
-  color: var(--color-muted);
+  color: var(--muted);
 }
 
 .rates-list {
@@ -360,7 +719,7 @@ body {
   display: flex;
   justify-content: space-between;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border);
 }
 
 .rates-list li:last-child {
@@ -369,21 +728,28 @@ body {
 }
 
 .rates-updated {
-  color: var(--color-muted);
-  font-size: 0.85rem;
+  color: var(--muted);
+  font-size: 0.83rem;
   margin-top: 12px;
 }
 
 .rates-error {
-  color: var(--color-expense);
+  color: var(--expense);
 }
 
-/* ---------- 8. Modal form ---------- */
-/* Fixed positioning centers the popup over the whole page. */
+.settings-panel {
+  max-width: 600px;
+}
+
+.settings-panel h3 {
+  margin-bottom: 6px;
+}
+
+/* ---------- 10. Modal form ---------- */
 .modal {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(15, 23, 42, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -392,55 +758,67 @@ body {
 }
 
 .modal-content {
-  background-color: var(--color-surface);
+  background-color: var(--surface);
   border-radius: var(--radius);
   padding: 24px;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
 }
 
-.modal-content h2 {
-  font-size: 1.3rem;
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 16px;
+}
+
+.modal-head h2 {
+  font-size: 1.25rem;
+}
+
+.modal-head .icon-btn {
+  display: flex;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   margin-bottom: 14px;
 }
 
 .form-group label,
 .form-group legend {
-  font-size: 0.9rem;
-  font-weight: bold;
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .form-group fieldset {
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
 }
 
 .radio-label {
-  font-weight: normal !important;
+  font-weight: 500 !important;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-top: 6px;
+  cursor: pointer;
 }
 
 .form-errors {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
-  color: var(--color-expense);
-  border-radius: 8px;
+  color: var(--expense);
+  border-radius: var(--radius-sm);
   padding: 10px 12px;
   margin-bottom: 14px;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
 }
 
 .form-errors ul {
@@ -457,66 +835,82 @@ body {
   flex: 1;
 }
 
-/* ---------- 9. Message toast & footer ---------- */
-/* Fixed toast in the bottom corner for "saved" feedback. */
+/* ---------- 11. Toast & footer ---------- */
 .message-box {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: var(--color-sidebar);
+  background-color: var(--sidebar);
   color: #ffffff;
   padding: 12px 18px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow);
   z-index: 200;
+  font-size: 0.92rem;
 }
 
 .app-footer {
   padding: 20px 28px;
-  color: var(--color-muted);
-  font-size: 0.85rem;
+  color: var(--muted);
+  font-size: 0.83rem;
   text-align: center;
+  border-top: 1px solid var(--border);
 }
 
-/* ---------- 10. Responsive rules ---------- */
-/* Tablet and smaller: sidebar becomes a top bar. */
+/* ---------- 12. Responsive rules ---------- */
+@media (max-width: 1024px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 900px) {
   body {
     flex-direction: column;
   }
 
+  .icon-btn {
+    display: flex;
+  }
+
+  /* Sidebar becomes an off-canvas drawer on mobile. */
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    box-shadow: 0 0 40px rgba(15, 23, 42, 0.3);
   }
 
-  .main-nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-top: 0;
-  }
-
-  .sidebar .btn-primary {
-    width: auto;
-    margin-top: 0;
+  .sidebar.open {
+    transform: translateX(0);
   }
 
   .main-content {
     padding: 20px;
   }
+
+  .topbar {
+    padding: 12px 16px;
+  }
 }
 
-/* Mobile: stack filters, shrink text, full-width buttons. */
-@media (max-width: 600px) {
-  .cards-grid {
+@media (max-width: 640px) {
+  .overview-grid {
     grid-template-columns: 1fr;
   }
 
-  .filter-group {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-group,
+  .filter-search {
     flex: 1 1 100%;
   }
 
@@ -524,9 +918,17 @@ body {
     flex-direction: column;
   }
 
+  .category-row {
+    grid-template-columns: 90px 1fr 76px;
+  }
+
   .transaction-table th,
   .transaction-table td {
-    padding: 10px 8px;
+    padding: 10px 10px;
     font-size: 0.85rem;
+  }
+
+  .quick-actions .btn {
+    flex: 1;
   }
 }

@@ -18,6 +18,8 @@ import {
   findHighestExpense,
   findLowestExpense,
   calculateAverageExpense,
+  getMonthlyTotals,
+  getCategoryTotals,
 } from "./calculations.js";
 
 // Format a number for display: 2 decimal places with thousand
@@ -147,10 +149,16 @@ export function hideEmptyState() {
 }
 
 // Open the modal for adding a new transaction.
-export function openAddModal() {
+// If `type` is "income" or "expense", that radio is pre-selected
+// (used by the quick-action buttons). Otherwise none is selected.
+export function openAddModal(type) {
   document.getElementById("modalTitle").textContent = "Add Transaction";
   document.getElementById("saveTransactionBtn").textContent =
     "Save Transaction";
+  const radios = document.querySelectorAll('input[name="type"]');
+  radios.forEach(function (radio) {
+    radio.checked = radio.value === type;
+  });
   document.getElementById("transactionModal").hidden = false;
 }
 
@@ -206,6 +214,117 @@ export function clearFormErrors() {
   const box = document.getElementById("formErrors");
   box.textContent = "";
   box.hidden = true;
+}
+
+// Month names for chart labels ("2026-11" -> "Nov 2026").
+const MONTH_NAMES = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+];
+
+// Draw both charts from real transaction data.
+// Shows an empty state instead of fake numbers when there
+// is no data yet.
+export function renderCharts() {
+  renderMonthlyChart();
+  renderCategoryChart();
+}
+
+// Income vs expenses bars, one column per month.
+function renderMonthlyChart() {
+  const chart = document.getElementById("monthlyChart");
+  const empty = document.getElementById("monthlyEmpty");
+  chart.textContent = "";
+
+  const months = getMonthlyTotals(transactions);
+  if (months.length === 0) {
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  // Find the largest value so bar heights are proportional.
+  let max = 0;
+  months.forEach(function (item) {
+    if (item.income > max) {
+      max = item.income;
+    }
+    if (item.expense > max) {
+      max = item.expense;
+    }
+  });
+
+  months.forEach(function (item) {
+    const col = document.createElement("div");
+    col.className = "month-col";
+
+    const bars = document.createElement("div");
+    bars.className = "month-bars";
+
+    const incomeBar = document.createElement("div");
+    incomeBar.className = "bar bar-income";
+    incomeBar.style.height = Math.round((item.income / max) * 100) + "%";
+    incomeBar.title = "Income: " + formatAmount(item.income);
+
+    const expenseBar = document.createElement("div");
+    expenseBar.className = "bar bar-expense";
+    expenseBar.style.height = Math.round((item.expense / max) * 100) + "%";
+    expenseBar.title = "Expenses: " + formatAmount(item.expense);
+
+    bars.appendChild(incomeBar);
+    bars.appendChild(expenseBar);
+
+    const label = document.createElement("span");
+    label.className = "month-label";
+    const parts = item.month.split("-");
+    const monthIndex = Number(parts[1]) - 1;
+    label.textContent = MONTH_NAMES[monthIndex] + " " + parts[0];
+
+    col.appendChild(bars);
+    col.appendChild(label);
+    chart.appendChild(col);
+  });
+}
+
+// Expense totals per category, largest first, as bars.
+function renderCategoryChart() {
+  const chart = document.getElementById("categoryChart");
+  const empty = document.getElementById("categoryEmpty");
+  chart.textContent = "";
+
+  const categories = getCategoryTotals(transactions);
+  if (categories.length === 0) {
+    empty.hidden = false;
+    return;
+  }
+  empty.hidden = true;
+
+  const max = categories[0].total;
+
+  categories.forEach(function (item) {
+    const row = document.createElement("div");
+    row.className = "category-row";
+
+    const name = document.createElement("span");
+    name.className = "category-name";
+    name.textContent = item.category;
+
+    const track = document.createElement("div");
+    track.className = "category-track";
+    const fill = document.createElement("div");
+    fill.className = "category-fill";
+    fill.style.width = Math.round((item.total / max) * 100) + "%";
+    track.appendChild(fill);
+
+    const amount = document.createElement("span");
+    amount.className = "category-amount";
+    amount.textContent = formatAmount(item.total);
+
+    row.appendChild(name);
+    row.appendChild(track);
+    row.appendChild(amount);
+    chart.appendChild(row);
+  });
 }
 
 // Show the "Loading rates…" state in the exchange panel.
