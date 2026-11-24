@@ -23,6 +23,7 @@ import { validateTransaction } from "./validation.js";
 import {
   renderDashboard,
   renderTransactions,
+  renderCharts,
   openAddModal,
   openEditModal,
   closeModal,
@@ -83,9 +84,10 @@ function applyFilters() {
   renderTransactions(filtered, emptyMessage);
 }
 
-// Re-draw the dashboard and the (filtered) table.
+// Re-draw the dashboard, charts, and (filtered) table.
 function refreshScreen() {
   renderDashboard();
+  renderCharts();
   applyFilters();
 }
 
@@ -165,11 +167,24 @@ async function loadRates() {
   }
 }
 
+// Show today's date in the top bar (e.g. "Monday, 24 November 2026").
+function showToday() {
+  const today = new Date();
+  const text = today.toLocaleDateString("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  document.getElementById("todayDate").textContent = text;
+}
+
 // Start the app: load data, draw the screen, wire up events.
 function init() {
   loadTransactions();
   refreshScreen();
   loadRates();
+  showToday();
 
   document
     .getElementById("addTransactionBtn")
@@ -221,6 +236,71 @@ function init() {
     .addEventListener("click", function () {
       document.getElementById("filterForm").reset();
       applyFilters();
+    });
+
+  // Quick actions: open the modal with the type pre-selected.
+  document
+    .getElementById("addIncomeBtn")
+    .addEventListener("click", function () {
+      clearForm();
+      openAddModal("income");
+    });
+  document
+    .getElementById("addExpenseBtn")
+    .addEventListener("click", function () {
+      clearForm();
+      openAddModal("expense");
+    });
+  document
+    .getElementById("topAddBtn")
+    .addEventListener("click", function () {
+      clearForm();
+      openAddModal();
+    });
+
+  // Close (X) button in the modal header.
+  document
+    .getElementById("closeModalBtn")
+    .addEventListener("click", function () {
+      closeModal();
+      clearForm();
+    });
+
+  // Sidebar Income / Expenses: apply that type filter and
+  // scroll to the transactions table.
+  const navFilterButtons = document.querySelectorAll("[data-nav-filter]");
+  navFilterButtons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      document.getElementById("filterType").value =
+        button.dataset.navFilter;
+      applyFilters();
+      document
+        .getElementById("transactions")
+        .scrollIntoView({ behavior: "smooth" });
+      document.getElementById("sidebar").classList.remove("open");
+    });
+  });
+
+  // Mobile menu toggle (sidebar drawer).
+  document
+    .getElementById("menuBtn")
+    .addEventListener("click", function () {
+      document.getElementById("sidebar").classList.toggle("open");
+    });
+
+  // Settings: clear all transactions (with confirmation).
+  document
+    .getElementById("clearAllBtn")
+    .addEventListener("click", function () {
+      const confirmed = confirm(
+        "Delete ALL transactions? This cannot be undone."
+      );
+      if (confirmed) {
+        transactions.length = 0;
+        saveTransactions();
+        refreshScreen();
+        showMessage("All transactions cleared.");
+      }
     });
 }
 

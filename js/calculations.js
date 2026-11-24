@@ -72,6 +72,70 @@ export function findLowestExpense(list) {
   return lowest;
 }
 
+// Monthly income/expense totals for the chart.
+// Groups transactions by "YYYY-MM" (first 7 chars of the date),
+// then returns the last 6 months in chronological order.
+// Each item: { month: "2026-11", income: 0, expense: 0 }
+export function getMonthlyTotals(list) {
+  const byMonth = {};
+  list.forEach(function (transaction) {
+    const month = transaction.date.slice(0, 7);
+    if (byMonth[month] === undefined) {
+      byMonth[month] = { month: month, income: 0, expense: 0 };
+    }
+    if (transaction.type === "income") {
+      byMonth[month].income = byMonth[month].income + transaction.amount;
+    } else {
+      byMonth[month].expense = byMonth[month].expense + transaction.amount;
+    }
+  });
+
+  const result = [];
+  Object.keys(byMonth).forEach(function (month) {
+    result.push(byMonth[month]);
+  });
+
+  // Oldest first so the chart reads left to right.
+  result.sort(function (a, b) {
+    if (a.month < b.month) {
+      return -1;
+    }
+    if (a.month > b.month) {
+      return 1;
+    }
+    return 0;
+  });
+
+  // Keep only the most recent 6 months.
+  return result.slice(-6);
+}
+
+// Expense totals per category for the breakdown chart.
+// Each item: { category: "Food", total: 25000 }
+// Sorted largest first. Income is ignored.
+export function getCategoryTotals(list) {
+  const totals = {};
+  list.forEach(function (transaction) {
+    if (transaction.type === "expense") {
+      if (totals[transaction.category] === undefined) {
+        totals[transaction.category] = 0;
+      }
+      totals[transaction.category] =
+        totals[transaction.category] + transaction.amount;
+    }
+  });
+
+  const result = [];
+  Object.keys(totals).forEach(function (category) {
+    result.push({ category: category, total: totals[category] });
+  });
+
+  result.sort(function (a, b) {
+    return b.total - a.total;
+  });
+  return result;
+}
+
 // Average (mean) of all expense amounts. Returns 0 if there
 // are no expenses, to avoid dividing by zero.
 export function calculateAverageExpense(list) {
