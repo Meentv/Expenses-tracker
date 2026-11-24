@@ -1,16 +1,17 @@
 /* ============================================================
-   style.css — Personal Finance & Expense Tracker (redesign)
+   style.css — Personal Finance & Expense Tracker (Bento)
    ------------------------------------------------------------
-   Design system:
-     - One spacing scale, one radius, one shadow, one palette.
-     - Layout: sidebar + page (top bar + content).
-     - Sections: buttons, cards, charts, filters, table,
-       rates, settings, modal, toast, responsive rules.
+   Design system: Minimalism + Bento Grid + subtle Glass.
+   - 4-column Bento grid with varied cell sizes (span).
+   - Glass top bar: translucent white + backdrop blur.
+   - Soft shadows, consistent radius, smooth transitions.
+   - Sections: tokens, sidebar, top bar, buttons, bento
+     cards, charts, filters, table, rates, modal, responsive.
    ============================================================ */
 
 /* ---------- 1. Design tokens & reset ---------- */
 :root {
-  --bg: #f8fafc;
+  --bg: #f1f5f9;
   --surface: #ffffff;
   --text: #0f172a;
   --muted: #64748b;
@@ -23,9 +24,10 @@
   --sidebar: #0f172a;
   --sidebar-soft: #1e293b;
   --sidebar-text: #cbd5e1;
-  --radius: 14px;
-  --radius-sm: 9px;
-  --shadow: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 16px rgba(15, 23, 42, 0.05);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.10);
 }
 
 * {
@@ -130,6 +132,7 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .nav-link svg {
@@ -156,7 +159,7 @@ body {
   width: 100%;
 }
 
-/* ---------- 3. Page & top bar ---------- */
+/* ---------- 3. Page & glass top bar ---------- */
 .page {
   flex: 1;
   min-width: 0;
@@ -164,11 +167,15 @@ body {
   flex-direction: column;
 }
 
+/* Glassmorphism: translucent surface + backdrop blur so
+   content scrolling underneath stays softly visible. */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: rgba(255, 255, 255, 0.92);
+  background-color: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   padding: 14px 28px;
   display: flex;
@@ -245,6 +252,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
 }
 
 .btn-primary {
@@ -294,7 +306,7 @@ body {
   background-color: #991b1b;
 }
 
-/* ---------- 5. Welcome & overview cards ---------- */
+/* ---------- 5. Welcome & Bento grid ---------- */
 .welcome {
   display: flex;
   align-items: flex-end;
@@ -318,22 +330,48 @@ body {
   flex-wrap: wrap;
 }
 
-.overview-grid {
+/* Bento: 4 columns, cells span different widths for hierarchy. */
+.bento {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
-  margin-bottom: 16px;
 }
 
-.card {
+.bento-balance {
+  grid-column: span 2;
+}
+
+.bento-chart {
+  grid-column: span 2;
+}
+
+.bento-category {
+  grid-column: span 2;
+}
+
+.bento-recent {
+  grid-column: span 4;
+}
+
+.card,
+.stat,
+.panel {
   background-color: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 20px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-.card h3 {
+.card:hover,
+.stat:hover,
+.panel:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+.card h3,
+.stat h3 {
   font-size: 0.85rem;
   color: var(--muted);
   font-weight: 600;
@@ -360,9 +398,25 @@ body {
   color: var(--expense);
 }
 
+/* Hero balance: deep surface with a soft glass glow. */
 .card-balance {
   background-color: var(--sidebar);
   border-color: var(--sidebar);
+  position: relative;
+  overflow: hidden;
+}
+
+.card-balance::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background-color: rgba(45, 212, 191, 0.18);
+  filter: blur(40px);
+  right: -50px;
+  top: -60px;
+  pointer-events: none;
 }
 
 .card-balance h3 {
@@ -371,31 +425,11 @@ body {
 
 .card-balance .card-value {
   color: #ffffff;
+  font-size: 2.1rem;
 }
 
 .card-balance .card-note {
   color: #94a3b8;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.stat {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 16px 20px;
-}
-
-.stat h3 {
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-weight: 600;
-  margin-bottom: 6px;
 }
 
 .stat-value {
@@ -404,20 +438,6 @@ body {
 }
 
 /* ---------- 6. Analytics panels & charts ---------- */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 16px;
-}
-
-.panel {
-  background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 20px;
-}
-
 .panel-head {
   display: flex;
   align-items: center;
@@ -428,6 +448,17 @@ body {
 
 .panel h3 {
   font-size: 1rem;
+}
+
+.panel-link {
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.panel-link:hover {
+  text-decoration: underline;
 }
 
 .legend {
@@ -500,6 +531,7 @@ body {
   width: 16px;
   border-radius: 5px 5px 0 0;
   min-height: 3px;
+  transition: height 0.3s ease;
 }
 
 .bar-income {
@@ -551,11 +583,55 @@ body {
   height: 100%;
   border-radius: 99px;
   min-width: 4px;
+  transition: width 0.3s ease;
 }
 
 .category-amount {
   text-align: right;
   font-weight: 700;
+}
+
+/* Recent transactions list (last 5, newest first). */
+.recent-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.recent-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.recent-list li:last-child {
+  border-bottom: none;
+}
+
+.recent-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.recent-title {
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.recent-meta {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.recent-amount {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
 }
 
 /* ---------- 7. Filter bar ---------- */
@@ -858,16 +934,21 @@ body {
 }
 
 /* ---------- 12. Responsive rules ---------- */
+/* Tablet: Bento goes 2 columns. */
 @media (max-width: 1024px) {
-  .analytics-grid {
-    grid-template-columns: 1fr;
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .bento-balance,
+  .bento-chart,
+  .bento-category,
+  .bento-recent {
+    grid-column: span 2;
   }
 }
 
+/* Mobile: sidebar drawer + single-column Bento. */
 @media (max-width: 900px) {
   body {
     flex-direction: column;
@@ -877,7 +958,6 @@ body {
     display: flex;
   }
 
-  /* Sidebar becomes an off-canvas drawer on mobile. */
   .sidebar {
     position: fixed;
     left: 0;
@@ -901,12 +981,15 @@ body {
 }
 
 @media (max-width: 640px) {
-  .overview-grid {
+  .bento {
     grid-template-columns: 1fr;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr 1fr;
+  .bento-balance,
+  .bento-chart,
+  .bento-category,
+  .bento-recent {
+    grid-column: span 1;
   }
 
   .filter-group,

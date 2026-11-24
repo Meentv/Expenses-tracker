@@ -83,6 +83,13 @@ Browser behaviour (to verify in Stage 11): panel shows "Loading rates…" then r
 
 **Redesign notes:** Charts are pure CSS bars (no library — assignment forbids unnecessary libs) fed by `getMonthlyTotals()` / `getCategoryTotals()`. Empty data shows chart empty states, never fake figures. Sidebar Income/Expenses apply real filters; Settings Clear-All actually clears localStorage. No fake notification/profile UI (no backend exists). TikTok reference was inaccessible (HTTP 400) — redesign follows established fintech patterns; student may share screenshots for further refinement.
 
+## Bento revision — regression check
+
+- All 40 original + 12 redesign IDs preserved in new HTML (verified by grep).
+- All JS syntax valid; all files serve HTTP 200.
+- New `renderRecent()` uses the same newest-first sort as the table; shows last 5 only; empty state when no data.
+- Bento grid: 4 cols desktop → 2 cols ≤1024px → 1 col ≤640px; sidebar off-canvas ≤900px. (Visual check required in browser — see checklist below.)
+
 ## Manual browser tests — STUDENT MUST PERFORM THESE (Stage 11)
 
 Logic tests above are automated and passing. The following browser tests **cannot be automated here** and must be performed by the student in the running app (Live Server). Tick each one only after actually doing it, and note the observed result:

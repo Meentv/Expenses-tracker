@@ -24,7 +24,7 @@ No React, no TypeScript, no backend — exactly as the assignment requires.
 ## Features
 
 - **Dashboard:** total balance, total income, total expenses, transaction count, highest/lowest/average expense, recent transactions (newest first). All figures are calculated from real records — nothing is hardcoded.
-- **Analytics charts (real data, no library):** Income vs Expenses monthly bars (last 6 months) and Expense Breakdown by Category bars, with empty states when there is no data.
+- **Analytics charts (real data, no library):** Income vs Expenses monthly bars (last 6 months) and Expense Breakdown by Category bars, with empty states when there is no data. Recent Transactions cell shows the last 5 records.
 - **Quick actions:** Add Income / Add Expense buttons that open the form with the type pre-selected; sidebar Income/Expenses links apply the matching filter.
 - **Transactions:** add, edit, and delete income/expense records with title, amount, type, category, date, and optional notes.
 - **Search & filtering:** by title, type, category, exact date, and date range — filters combine, with a Clear Filters button.
@@ -229,6 +229,7 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | `validation.js` | `validateTransaction(data)` | Returns a list of error messages (empty = valid) |
 | `ui.js` | `renderDashboard()` | Calls all 7 calculations, writes them into the cards |
 | | `renderCharts()` | Draws monthly + category charts from real data (empty states if none) |
+| | `renderRecent()` | Draws the last 5 transactions (newest first) in the dashboard cell |
 | | `renderTransactions(list, msg)` | Builds table rows (green + / red − amounts) |
 | | `openAddModal()` / `openEditModal(tx)` / `closeModal()` | Modal show/hide + form filling |
 | | `showRatesLoading()` / `showRates()` / `showRatesError()` | Exchange panel states |
@@ -250,13 +251,16 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 
 - **Selectors:** `.card` styles all cards; `.card-income .card-value` styles the value *inside* an income card (green). `*` resets all default margins.
 - **Classes vs IDs:** Classes (`.card`, `.btn`) style groups; IDs (`#dashboard`) target one element. This project styles almost entirely with classes.
-- **CSS variables (`:root`):** `--color-primary: #0f766e` etc. Change a colour once, it updates everywhere. Used via `var(--color-primary)`.
-- **Colours & backgrounds:** Light grey page (`#f4f6f8`), white surfaces, dark sidebar (`#111827`), green income (`#16a34a`), red expense (`#dc2626`).
-- **Margins & padding:** `margin` = space *outside* an element; `padding` = space *inside*. Cards use `padding: 18px`; sections use `margin-bottom: 36px`.
-- **Flexbox (`display: flex`):** 1-D layout (row/column). Used for sidebar+main side-by-side, filter bar wrapping, modal buttons, nav links.
-- **CSS Grid (`display: grid`):** 2-D layout (rows + columns). Used for the 7 cards: `repeat(auto-fit, minmax(200px, 1fr))` = as many columns as fit.
-- **Positioning:** `sticky` keeps the sidebar visible on scroll; `fixed` pins the modal overlay and toast; `[hidden] { display: none !important; }` guarantees hidden elements stay hidden.
-- **Responsive design:** `@media (max-width: 900px)` turns the sidebar into a top bar (tablet); `@media (max-width: 600px)` stacks cards/filters into one column (mobile). Same HTML, rearranged by CSS.
+- **CSS variables (`:root`):** `--primary: #0f766e`, `--radius: 16px`, `--shadow`, etc. Change a value once, it updates everywhere. Used via `var(--primary)`.
+- **Colours & backgrounds:** Light grey page (`#f1f5f9`), white surfaces, dark sidebar (`#0f172a`), green income (`#16a34a`), red expense (`#dc2626`). One palette, used consistently.
+- **Box model:** Every element is content + `padding` (inside) + `border` + `margin` (outside). `box-sizing: border-box` (set on `*`) means `width` includes padding/border, so layouts don't overflow. Cards use `padding: 20px`; sections use `margin-bottom: 40px`.
+- **Flexbox (`display: flex`):** 1-D layout (row/column). Used for sidebar+page side-by-side, filter bar wrapping, modal buttons, nav links, chart columns.
+- **CSS Grid + Bento layout (`display: grid`):** 2-D layout (rows + columns). The dashboard uses a 4-column Bento grid: `.bento { grid-template-columns: repeat(4, 1fr); }` with cells spanning differently — `.bento-balance { grid-column: span 2; }` (hero), chart/category cells span 2, recent spans 4. Varied sizes create visual hierarchy instead of identical rows. At 1024px it becomes 2 columns; at 640px, 1 column.
+- **Positioning:** `sticky` keeps the sidebar/top bar visible on scroll; `fixed` pins the modal overlay, toast, and mobile drawer; `relative` + `absolute` (via `::after`) places the balance-card glow. `[hidden] { display: none !important; }` guarantees hidden elements stay hidden.
+- **Glassmorphism:** The top bar uses `background-color: rgba(255,255,255,0.72)` + `backdrop-filter: blur(14px)` — a translucent surface that blurs content scrolling underneath. The balance card has a soft blurred glow (`filter: blur(40px)` circle) for depth. Used sparingly (top bar + hero card only) so the design stays minimal.
+- **Shadows & border radius:** `--shadow` (soft, layered) on cards/panels; `--shadow-hover` on hover for depth feedback. `--radius: 16px` for cards, `--radius-sm: 10px` for buttons/inputs — consistent rounded corners everywhere.
+- **Transitions:** `transition: background-color 0.15s ease` on nav/buttons, `box-shadow/transform 0.2s` on cards, `height/width 0.3s` on chart bars. Subtle motion only — no decorative animation.
+- **Responsive design (media queries):** `@media (max-width: 1024px)` Bento → 2 columns; `@media (max-width: 900px)` sidebar becomes an off-canvas drawer (`.sidebar.open` slides in); `@media (max-width: 640px)` Bento → 1 column, filters stack. Same HTML, rearranged by CSS.
 - **Hover & focus:** `.btn-primary:hover` darkens on mouse-over; `:focus` shows a green outline for keyboard users (accessibility).
 - **Table wrapper:** `.table-wrap { overflow-x: auto; }` lets the table scroll sideways on small screens instead of breaking the layout.
 
