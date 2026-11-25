@@ -169,16 +169,16 @@ async function loadRates() {
   }
 }
 
-// Show today's date in the top bar (e.g. "Monday, 24 November 2026").
-function showToday() {
-  const today = new Date();
-  const text = today.toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-  document.getElementById("todayDate").textContent = text;
+// Show a time-based greeting (Good morning / afternoon / evening).
+function showGreeting() {
+  const hour = new Date().getHours();
+  let greeting = "Good evening";
+  if (hour < 12) {
+    greeting = "Good morning";
+  } else if (hour < 17) {
+    greeting = "Good afternoon";
+  }
+  document.getElementById("greetingText").textContent = greeting;
 }
 
 // Start the app: load data, draw the screen, wire up events.
@@ -186,7 +186,7 @@ function init() {
   loadTransactions();
   refreshScreen();
   loadRates();
-  showToday();
+  showGreeting();
 
   document
     .getElementById("addTransactionBtn")
@@ -258,6 +258,32 @@ function init() {
     .addEventListener("click", function () {
       clearForm();
       openAddModal();
+    });
+
+  // Dark CTA card button: same as Add Transaction.
+  document
+    .getElementById("ctaAddBtn")
+    .addEventListener("click", function () {
+      clearForm();
+      openAddModal();
+    });
+
+  // "This Month": filter the table to the current month.
+  document
+    .getElementById("thisMonthBtn")
+    .addEventListener("click", function () {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      document.getElementById("filterFrom").value =
+        year + "-" + month + "-01";
+      document.getElementById("filterTo").value =
+        year + "-" + month + "-31";
+      applyFilters();
+      document
+        .getElementById("transactions")
+        .scrollIntoView({ behavior: "smooth" });
+      showMessage("Showing this month only.");
     });
 
   // Close (X) button in the modal header.
