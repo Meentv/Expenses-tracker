@@ -32,26 +32,33 @@ export function formatAmount(value) {
   });
 }
 
+// Format a money amount with the Naira sign.
+// Example: 50000 -> "₦50,000.00"
+// (Exchange rates use formatAmount without the sign.)
+export function formatMoney(value) {
+  return "₦" + formatAmount(value);
+}
+
 // Update the 7 dashboard cards from the current transactions.
 export function renderDashboard() {
-  document.getElementById("totalIncome").textContent = formatAmount(
+  document.getElementById("totalIncome").textContent = formatMoney(
     calculateTotalIncome(transactions)
   );
-  document.getElementById("totalExpenses").textContent = formatAmount(
+  document.getElementById("totalExpenses").textContent = formatMoney(
     calculateTotalExpenses(transactions)
   );
-  document.getElementById("availableBalance").textContent = formatAmount(
+  document.getElementById("availableBalance").textContent = formatMoney(
     calculateBalance(transactions)
   );
   document.getElementById("totalTransactions").textContent =
     countTransactions(transactions);
-  document.getElementById("highestExpense").textContent = formatAmount(
+  document.getElementById("highestExpense").textContent = formatMoney(
     findHighestExpense(transactions)
   );
-  document.getElementById("lowestExpense").textContent = formatAmount(
+  document.getElementById("lowestExpense").textContent = formatMoney(
     findLowestExpense(transactions)
   );
-  document.getElementById("averageExpense").textContent = formatAmount(
+  document.getElementById("averageExpense").textContent = formatMoney(
     calculateAverageExpense(transactions)
   );
 }
@@ -94,10 +101,10 @@ export function renderTransactions(list, emptyMessage) {
     // Amount: green with + for income, red with - for expense.
     const amountCell = document.createElement("td");
     if (transaction.type === "income") {
-      amountCell.textContent = "+" + formatAmount(transaction.amount);
+      amountCell.textContent = "+" + formatMoney(transaction.amount);
       amountCell.className = "amount-income";
     } else {
-      amountCell.textContent = "-" + formatAmount(transaction.amount);
+      amountCell.textContent = "-" + formatMoney(transaction.amount);
       amountCell.className = "amount-expense";
     }
     row.appendChild(amountCell);
@@ -250,13 +257,10 @@ export function renderRecent() {
   recent.forEach(function (transaction) {
     const item = document.createElement("li");
 
-    const dot = document.createElement("span");
-    dot.className = "recent-dot";
-    if (transaction.type === "income") {
-      dot.style.backgroundColor = "var(--income)";
-    } else {
-      dot.style.backgroundColor = "var(--expense)";
-    }
+    // Icon tile: first letter of the category.
+    const icon = document.createElement("span");
+    icon.className = "recent-icon";
+    icon.textContent = transaction.category.slice(0, 1);
 
     const text = document.createElement("span");
     const title = document.createElement("span");
@@ -264,22 +268,29 @@ export function renderRecent() {
     title.textContent = transaction.title;
     const meta = document.createElement("span");
     meta.className = "recent-meta";
-    meta.textContent = "  " + transaction.category + " · " + transaction.date;
+    meta.textContent = transaction.date;
     text.appendChild(title);
+    text.appendChild(document.createElement("br"));
     text.appendChild(meta);
+
+    // Category pill.
+    const pill = document.createElement("span");
+    pill.className = "recent-pill";
+    pill.textContent = transaction.category;
 
     const amount = document.createElement("span");
     amount.className = "recent-amount";
     if (transaction.type === "income") {
-      amount.textContent = "+" + formatAmount(transaction.amount);
+      amount.textContent = "+" + formatMoney(transaction.amount);
       amount.className = "recent-amount amount-income";
     } else {
-      amount.textContent = "-" + formatAmount(transaction.amount);
+      amount.textContent = "-" + formatMoney(transaction.amount);
       amount.className = "recent-amount amount-expense";
     }
 
-    item.appendChild(dot);
+    item.appendChild(icon);
     item.appendChild(text);
+    item.appendChild(pill);
     item.appendChild(amount);
     list.appendChild(item);
   });
@@ -297,6 +308,40 @@ const MONTH_NAMES = [
 export function renderCharts() {
   renderMonthlyChart();
   renderCategoryChart();
+  renderSparklines();
+}
+
+// Small trend lines in the spending/income cards.
+// Draws an SVG polyline from the last 6 monthly totals.
+function renderSparklines() {
+  const months = getMonthlyTotals(transactions);
+  drawSparkline("sparkExpense", months, "expense");
+  drawSparkline("sparkIncome", months, "income");
+}
+
+function drawSparkline(id, months, key) {
+  const line = document.getElementById(id);
+  if (months.length < 2) {
+    line.setAttribute("points", "");
+    return;
+  }
+  let max = 0;
+  months.forEach(function (item) {
+    if (item[key] > max) {
+      max = item[key];
+    }
+  });
+  if (max === 0) {
+    line.setAttribute("points", "");
+    return;
+  }
+  const points = [];
+  months.forEach(function (item, index) {
+    const x = Math.round((index / (months.length - 1)) * 100);
+    const y = Math.round(28 - (item[key] / max) * 24);
+    points.push(x + "," + y);
+  });
+  line.setAttribute("points", points.join(" "));
 }
 
 // Income vs expenses bars, one column per month.
@@ -333,12 +378,12 @@ function renderMonthlyChart() {
     const incomeBar = document.createElement("div");
     incomeBar.className = "bar bar-income";
     incomeBar.style.height = Math.round((item.income / max) * 100) + "%";
-    incomeBar.title = "Income: " + formatAmount(item.income);
+    incomeBar.title = "Income: " + formatMoney(item.income);
 
     const expenseBar = document.createElement("div");
     expenseBar.className = "bar bar-expense";
     expenseBar.style.height = Math.round((item.expense / max) * 100) + "%";
-    expenseBar.title = "Expenses: " + formatAmount(item.expense);
+    expenseBar.title = "Expenses: " + formatMoney(item.expense);
 
     bars.appendChild(incomeBar);
     bars.appendChild(expenseBar);
@@ -355,44 +400,69 @@ function renderMonthlyChart() {
   });
 }
 
-// Expense totals per category, largest first, as bars.
+// Expense breakdown as a donut (top 4 categories + Others).
+// Uses a CSS conic-gradient ring built from real percentages.
+const DONUT_COLORS = ["#1e6b4f", "#7bc47f", "#f2b84b", "#f4a7b9", "#94a3b8"];
+
 function renderCategoryChart() {
-  const chart = document.getElementById("categoryChart");
+  const donut = document.getElementById("donutChart");
+  const legend = document.getElementById("donutLegend");
   const empty = document.getElementById("categoryEmpty");
-  chart.textContent = "";
+  legend.textContent = "";
 
   const categories = getCategoryTotals(transactions);
   if (categories.length === 0) {
+    donut.style.background = "none";
     empty.hidden = false;
     return;
   }
   empty.hidden = true;
 
-  const max = categories[0].total;
-
+  // Total expenses for percentages.
+  let total = 0;
   categories.forEach(function (item) {
-    const row = document.createElement("div");
-    row.className = "category-row";
+    total = total + item.total;
+  });
 
+  // Top 4 categories, everything else grouped as "Others".
+  const top = categories.slice(0, 4);
+  let othersTotal = 0;
+  categories.slice(4).forEach(function (item) {
+    othersTotal = othersTotal + item.total;
+  });
+  const slices = top.slice();
+  if (othersTotal > 0) {
+    slices.push({ category: "Others", total: othersTotal });
+  }
+
+  // Build the conic-gradient: each slice starts where the last ended.
+  let start = 0;
+  const parts = [];
+  slices.forEach(function (item, index) {
+    const percent = (item.total / total) * 100;
+    const end = start + percent;
+    parts.push(
+      DONUT_COLORS[index] + " " + start + "% " + end + "%"
+    );
+    start = end;
+  });
+  donut.style.background =
+    "conic-gradient(" + parts.join(", ") + ")";
+
+  // Legend rows with percentages.
+  slices.forEach(function (item, index) {
+    const row = document.createElement("li");
+    const dot = document.createElement("span");
+    dot.className = "legend-dot";
+    dot.style.backgroundColor = DONUT_COLORS[index];
     const name = document.createElement("span");
-    name.className = "category-name";
     name.textContent = item.category;
-
-    const track = document.createElement("div");
-    track.className = "category-track";
-    const fill = document.createElement("div");
-    fill.className = "category-fill";
-    fill.style.width = Math.round((item.total / max) * 100) + "%";
-    track.appendChild(fill);
-
-    const amount = document.createElement("span");
-    amount.className = "category-amount";
-    amount.textContent = formatAmount(item.total);
-
+    const percent = document.createElement("strong");
+    percent.textContent = Math.round((item.total / total) * 100) + "%";
+    row.appendChild(dot);
     row.appendChild(name);
-    row.appendChild(track);
-    row.appendChild(amount);
-    chart.appendChild(row);
+    row.appendChild(percent);
+    legend.appendChild(row);
   });
 }
 

@@ -1,33 +1,34 @@
 /* ============================================================
-   style.css — Personal Finance & Expense Tracker (Bento)
-   ------------------------------------------------------------
-   Design system: Minimalism + Bento Grid + subtle Glass.
-   - 4-column Bento grid with varied cell sizes (span).
-   - Glass top bar: translucent white + backdrop blur.
-   - Soft shadows, consistent radius, smooth transitions.
-   - Sections: tokens, sidebar, top bar, buttons, bento
-     cards, charts, filters, table, rates, modal, responsive.
+   style.css — Personal Finance & Expense Tracker
+   Design: Minimalism + Bento Grid + subtle Glass.
+   Palette (from template): forest green, mint, cream, gold.
    ============================================================ */
 
 /* ---------- 1. Design tokens & reset ---------- */
 :root {
-  --bg: #f1f5f9;
+  --bg: #f6f4ef;
   --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #0f766e;
-  --primary-dark: #115e59;
-  --income: #16a34a;
+  --text: #1c2420;
+  --muted: #6b7a72;
+  --border: #e7e4da;
+  --green-dark: #14342b;
+  --green: #1e6b4f;
+  --green-deep: #2d7d5f;
+  --mint: #d9f0e0;
+  --mint-soft: #eef8f1;
+  --gold: #f2b84b;
+  --pink-soft: #fdeef1;
+  --pink: #e85d75;
+  --income: #1e9e5a;
   --expense: #dc2626;
   --danger: #b91c1c;
-  --sidebar: #0f172a;
-  --sidebar-soft: #1e293b;
-  --sidebar-text: #cbd5e1;
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
-  --shadow-hover: 0 2px 4px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.10);
+  --sidebar: #14342b;
+  --sidebar-soft: #1e4a3c;
+  --sidebar-text: #cfe3d8;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgba(20, 52, 43, 0.05), 0 8px 24px rgba(20, 52, 43, 0.06);
+  --shadow-hover: 0 2px 4px rgba(20, 52, 43, 0.06), 0 12px 32px rgba(20, 52, 43, 0.10);
 }
 
 * {
@@ -51,6 +52,14 @@ body {
   line-height: 1.5;
   display: flex;
   min-height: 100vh;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
 }
 
 /* ---------- 2. Sidebar ---------- */
@@ -77,13 +86,10 @@ body {
 }
 
 .brand-mark {
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background-color: var(--primary);
-  color: #ffffff;
-  font-weight: bold;
-  font-size: 1.2rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background-color: var(--green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -92,29 +98,20 @@ body {
 
 .brand-name {
   color: #ffffff;
-  font-weight: bold;
+  font-weight: 800;
   font-size: 1rem;
   line-height: 1.2;
 }
 
 .brand-sub {
-  color: #94a3b8;
-  font-size: 0.8rem;
+  color: #8fb8a6;
+  font-size: 0.78rem;
 }
 
 .main-nav {
   display: flex;
   flex-direction: column;
   gap: 4px;
-}
-
-.nav-heading {
-  color: #64748b;
-  font-size: 0.72rem;
-  font-weight: bold;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 8px 12px 4px;
 }
 
 .nav-link {
@@ -128,8 +125,8 @@ body {
   text-align: left;
   background: none;
   border: none;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
+  padding: 11px 14px;
+  border-radius: 99px;
   cursor: pointer;
   width: 100%;
   transition: background-color 0.15s ease, color 0.15s ease;
@@ -150,7 +147,7 @@ body {
 }
 
 .nav-active {
-  background-color: var(--primary);
+  background-color: var(--green);
   color: #ffffff;
 }
 
@@ -167,34 +164,53 @@ body {
   flex-direction: column;
 }
 
-/* Glassmorphism: translucent surface + backdrop blur so
-   content scrolling underneath stays softly visible. */
+/* Glassmorphism: translucent surface + backdrop blur. */
 .topbar {
   position: sticky;
   top: 0;
   z-index: 40;
-  background-color: rgba(255, 255, 255, 0.72);
+  background-color: rgba(246, 244, 239, 0.78);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
   padding: 14px 28px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
-.topbar h1 {
-  font-size: 1.25rem;
-  line-height: 1.2;
+.search-box {
+  flex: 1;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 9px 16px;
 }
 
-.topbar-date {
-  color: var(--muted);
-  font-size: 0.85rem;
+.search-box svg {
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2;
+  stroke-linecap: round;
+  flex-shrink: 0;
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.93rem;
+  width: 100%;
+  background: none;
+  color: var(--text);
 }
 
 .topbar .btn {
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .icon-btn {
@@ -212,7 +228,7 @@ body {
 }
 
 .icon-btn:hover {
-  background-color: #f1f5f9;
+  background-color: var(--mint-soft);
 }
 
 .main-content {
@@ -242,9 +258,9 @@ body {
 .btn {
   font-family: inherit;
   font-size: 0.92rem;
-  font-weight: 600;
-  padding: 10px 16px;
-  border-radius: var(--radius-sm);
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 99px;
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -260,12 +276,21 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--primary);
+  background-color: var(--green-dark);
   color: #ffffff;
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark);
+  background-color: var(--green);
+}
+
+.btn-mint {
+  background-color: var(--mint);
+  color: var(--green-dark);
+}
+
+.btn-mint:hover {
+  background-color: #c4e6d2;
 }
 
 .btn-secondary {
@@ -275,16 +300,16 @@ body {
 }
 
 .btn-secondary:hover {
-  background-color: #f1f5f9;
+  background-color: var(--mint-soft);
 }
 
 .btn-income {
-  background-color: var(--income);
+  background-color: var(--green);
   color: #ffffff;
 }
 
 .btn-income:hover {
-  background-color: #15803d;
+  background-color: var(--green-dark);
 }
 
 .btn-expense {
@@ -330,21 +355,14 @@ body {
   flex-wrap: wrap;
 }
 
-/* Bento: 4 columns, cells span different widths for hierarchy. */
+/* Bento: 4 columns, varied spans for hierarchy. */
 .bento {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 
-.bento-balance {
-  grid-column: span 2;
-}
-
-.bento-chart {
-  grid-column: span 2;
-}
-
+.bento-chart,
 .bento-category {
   grid-column: span 2;
 }
@@ -361,7 +379,7 @@ body {
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 20px;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
 .card:hover,
@@ -370,66 +388,98 @@ body {
   box-shadow: var(--shadow-hover);
 }
 
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.card-icon svg {
+  color: var(--green-dark);
+}
+
+.sparkline {
+  width: 84px;
+  height: 26px;
+  color: var(--green);
+}
+
 .card h3,
 .stat h3 {
   font-size: 0.85rem;
   color: var(--muted);
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .card-value {
-  font-size: 1.7rem;
+  font-size: 1.65rem;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 
 .card-note {
   color: var(--muted);
-  font-size: 0.82rem;
-  margin-top: 4px;
+  font-size: 0.85rem;
+  margin-top: 6px;
 }
 
-.card-income .card-value {
-  color: var(--income);
+/* Template card tints */
+.card-spending {
+  background-color: var(--mint);
+  border-color: var(--mint);
 }
 
-.card-expense .card-value {
-  color: var(--expense);
+.card-spending .card-icon {
+  background-color: var(--surface);
 }
 
-/* Hero balance: deep surface with a soft glass glow. */
 .card-balance {
-  background-color: var(--sidebar);
-  border-color: var(--sidebar);
-  position: relative;
-  overflow: hidden;
+  background-color: var(--pink-soft);
+  border-color: var(--pink-soft);
 }
 
-.card-balance::after {
-  content: "";
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background-color: rgba(45, 212, 191, 0.18);
-  filter: blur(40px);
-  right: -50px;
-  top: -60px;
-  pointer-events: none;
+.card-balance .card-icon {
+  background-color: var(--surface);
 }
 
-.card-balance h3 {
-  color: #94a3b8;
+.card-balance .card-icon svg {
+  color: var(--pink);
 }
 
-.card-balance .card-value {
+/* Dark CTA card */
+.card-cta {
+  background-color: var(--green-dark);
+  border-color: var(--green-dark);
   color: #ffffff;
-  font-size: 2.1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-.card-balance .card-note {
-  color: #94a3b8;
+.card-cta h3 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+.card-cta .card-note {
+  color: #a8c8b8;
+  margin-top: 0;
+  margin-bottom: 6px;
 }
 
 .stat-value {
@@ -451,9 +501,9 @@ body {
 }
 
 .panel-link {
-  color: var(--primary);
+  color: var(--green);
   font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
 }
 
@@ -482,11 +532,11 @@ body {
 }
 
 .legend-income {
-  background-color: var(--income);
+  background-color: #7bc47f;
 }
 
 .legend-expense {
-  background-color: var(--expense);
+  background-color: var(--green-dark);
 }
 
 .chart-empty {
@@ -496,6 +546,54 @@ body {
   text-align: center;
   border: 1px dashed var(--border);
   border-radius: var(--radius-sm);
+}
+
+/* Donut: conic-gradient ring + legend with percentages. */
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding-top: 8px;
+}
+
+.donut {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.donut::after {
+  content: "";
+  position: absolute;
+  inset: 26px;
+  border-radius: 50%;
+  background-color: var(--surface);
+}
+
+.donut-legend {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 0.88rem;
+  flex: 1;
+}
+
+.donut-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.donut-legend .legend-dot {
+  flex-shrink: 0;
+}
+
+.donut-legend strong {
+  margin-left: auto;
+  font-weight: 700;
 }
 
 /* Monthly bars: each month is a column with two bars. */
@@ -535,60 +633,17 @@ body {
 }
 
 .bar-income {
-  background-color: var(--income);
+  background-color: #7bc47f;
 }
 
 .bar-expense {
-  background-color: var(--expense);
+  background-color: var(--green-dark);
 }
 
 .month-label {
   font-size: 0.75rem;
   color: var(--muted);
   white-space: nowrap;
-}
-
-/* Category bars: label + track + amount per row. */
-.category-chart {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 6px;
-}
-
-.category-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 90px;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.88rem;
-}
-
-.category-name {
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.category-track {
-  background-color: #f1f5f9;
-  border-radius: 99px;
-  height: 10px;
-  overflow: hidden;
-}
-
-.category-fill {
-  background-color: var(--expense);
-  height: 100%;
-  border-radius: 99px;
-  min-width: 4px;
-  transition: width 0.3s ease;
-}
-
-.category-amount {
-  text-align: right;
-  font-weight: 700;
 }
 
 /* Recent transactions list (last 5, newest first). */
@@ -610,15 +665,22 @@ body {
   border-bottom: none;
 }
 
-.recent-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
+.recent-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background-color: var(--mint-soft);
+  color: var(--green-dark);
+  font-weight: 800;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
 
 .recent-title {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.92rem;
 }
 
@@ -627,11 +689,23 @@ body {
   font-size: 0.8rem;
 }
 
-.recent-amount {
+.recent-pill {
   margin-left: auto;
+  font-size: 0.75rem;
   font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background-color: var(--mint-soft);
+  color: var(--green-dark);
+  white-space: nowrap;
+}
+
+.recent-amount {
+  font-weight: 800;
   font-size: 0.92rem;
   white-space: nowrap;
+  min-width: 96px;
+  text-align: right;
 }
 
 /* ---------- 7. Filter bar ---------- */
@@ -653,10 +727,6 @@ body {
   flex-direction: column;
   gap: 4px;
   flex: 1 1 140px;
-}
-
-.filter-search {
-  flex: 2 1 220px;
 }
 
 .filter-group label {
@@ -683,7 +753,7 @@ body {
 .filter-group select:focus,
 .form-group input:focus,
 .form-group select:focus {
-  outline: 2px solid var(--primary);
+  outline: 2px solid var(--green);
   outline-offset: 1px;
 }
 
@@ -715,11 +785,11 @@ body {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background-color: #f8fafc;
+  background-color: #f8faf7;
 }
 
 .transaction-table tbody tr:hover {
-  background-color: #f8fafc;
+  background-color: var(--mint-soft);
 }
 
 .transaction-table tbody tr:last-child td {
@@ -753,7 +823,7 @@ body {
 }
 
 .row-actions button:hover {
-  background-color: #f1f5f9;
+  background-color: var(--mint-soft);
 }
 
 .empty-state {
@@ -825,7 +895,7 @@ body {
 .modal {
   position: fixed;
   inset: 0;
-  background-color: rgba(15, 23, 42, 0.55);
+  background-color: rgba(20, 52, 43, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -841,7 +911,7 @@ body {
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 20px 50px rgba(20, 52, 43, 0.25);
 }
 
 .modal-head {
@@ -916,7 +986,7 @@ body {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: var(--sidebar);
+  background-color: var(--green-dark);
   color: #ffffff;
   padding: 12px 18px;
   border-radius: var(--radius-sm);
@@ -934,13 +1004,11 @@ body {
 }
 
 /* ---------- 12. Responsive rules ---------- */
-/* Tablet: Bento goes 2 columns. */
 @media (max-width: 1024px) {
   .bento {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .bento-balance,
   .bento-chart,
   .bento-category,
   .bento-recent {
@@ -948,7 +1016,6 @@ body {
   }
 }
 
-/* Mobile: sidebar drawer + single-column Bento. */
 @media (max-width: 900px) {
   body {
     flex-direction: column;
@@ -964,7 +1031,7 @@ body {
     top: 0;
     transform: translateX(-100%);
     transition: transform 0.2s ease;
-    box-shadow: 0 0 40px rgba(15, 23, 42, 0.3);
+    box-shadow: 0 0 40px rgba(20, 52, 43, 0.3);
   }
 
   .sidebar.open {
@@ -977,6 +1044,13 @@ body {
 
   .topbar {
     padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .search-box {
+    max-width: none;
+    order: 3;
+    flex-basis: 100%;
   }
 }
 
@@ -985,24 +1059,22 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .bento-balance,
   .bento-chart,
   .bento-category,
   .bento-recent {
     grid-column: span 1;
   }
 
-  .filter-group,
-  .filter-search {
+  .donut-wrap {
+    flex-direction: column;
+  }
+
+  .filter-group {
     flex: 1 1 100%;
   }
 
   .modal-actions {
     flex-direction: column;
-  }
-
-  .category-row {
-    grid-template-columns: 90px 1fr 76px;
   }
 
   .transaction-table th,
@@ -1013,5 +1085,9 @@ body {
 
   .quick-actions .btn {
     flex: 1;
+  }
+
+  .recent-pill {
+    display: none;
   }
 }

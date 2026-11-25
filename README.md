@@ -24,7 +24,8 @@ No React, no TypeScript, no backend — exactly as the assignment requires.
 ## Features
 
 - **Dashboard:** total balance, total income, total expenses, transaction count, highest/lowest/average expense, recent transactions (newest first). All figures are calculated from real records — nothing is hardcoded.
-- **Analytics charts (real data, no library):** Income vs Expenses monthly bars (last 6 months) and Expense Breakdown by Category bars, with empty states when there is no data. Recent Transactions cell shows the last 5 records.
+- **Analytics charts (real data, no library):** Spending Overview donut (top 4 categories + Others, with percentages) and Monthly Trend bars (last 6 months), with empty states when there is no data. Recent Transactions cell shows the last 5 records with category pills. Spending/Income cards include sparkline trends.
+- **Template touches:** time-based greeting, top-bar search, "This Month" quick filter, ₦ money formatting, dark CTA card.
 - **Quick actions:** Add Income / Add Expense buttons that open the form with the type pre-selected; sidebar Income/Expenses links apply the matching filter.
 - **Transactions:** add, edit, and delete income/expense records with title, amount, type, category, date, and optional notes.
 - **Search & filtering:** by title, type, category, exact date, and date range — filters combine, with a Clear Filters button.
@@ -106,7 +107,7 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 - **`<body>`** — Contains all visible page content. Everything from the sidebar to the footer sits inside it.
 - **`<aside class="sidebar">`** — Side content: brand/logo, navigation, Add Transaction button. Fixed on desktop; becomes an off-canvas drawer on mobile (toggled by the menu button).
 - **`<header class="topbar">`** — The top bar: mobile menu button, page title ("Dashboard"), today's date, Add button. Sticky at the top of the content area.
-- **`<h1>`** — The main page heading ("Dashboard" in the top bar). Only one `<h1>` per page — the most important heading.
+- **`<h1>`** — *Not used in the current design.* The top bar has no `<h1>`; the greeting ("Good evening") is an `<h2>`. Listed here only to avoid confusion — do not claim it appears in the project.
 - **`<nav>`** — Contains navigation links/buttons. Used for Dashboard, Transactions, Income, Expenses, Categories, Exchange Rates, Settings. `aria-label="Main navigation"` helps screen readers.
 - **`<main>`** — Holds the main content (overview, analytics, transactions, rates, settings). One `<main>` per page; helps accessibility and SEO.
 - **`<section>`** — Groups related content with a heading. Used 5 times: `#dashboard`, `#analytics`, `#transactions`, `#exchange-rates`, `#settings`.
@@ -116,7 +117,7 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 
 ### Headings and text
 
-- **`<h2>`** — Section headings ("Dashboard", "Transactions", "Exchange Rates", modal title). Second-level headings under `<h1>`.
+- **`<h2>`** — Section headings (greeting "Good evening", "Overview", "Analytics", "Transactions", "Exchange Rates", "Settings", modal title).
 - **`<h3>`** — Card headings ("Total Income", etc.). Third level, inside each `<article>`.
 - **`<p>`** — A paragraph of text. Used for the tagline, section notes, empty state, rates states, and footer.
 - **`<span>`** — Inline text container (no line break). Used in the rates list to label each currency.
@@ -129,6 +130,8 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 - **`<path d="M4 6h16">`** — An SVG shape drawn with commands (lines/curves). Used inside `<svg>` for list, arrow, chart, and gear icons.
 - **`<rect x="3" y="3" width="7" height="7">`** — An SVG rectangle. Used inside the Dashboard grid icon (4 small squares).
 - **`<circle cx="12" cy="12" r="3">`** — An SVG circle. Used inside the Settings gear icon.
+- **`<polyline points="0,20 50,10 100,15">`** — An SVG line made of connected points. Used for the two sparklines in the Spending/Income cards; JavaScript sets its `points` from monthly totals.
+- **`<br>`** — A line break (no closing tag). Created by JavaScript in Recent Transactions to put the date under the title.
 - **`<button type="button">`** — An interactive button. Used for "Add Transaction", "Clear Filters", "Cancel", and "Save Transaction". `type="button"` prevents accidental form submission; the Save button uses `type="submit"`.
 
 ### Forms
@@ -181,7 +184,8 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | `lang` | Page language | `<html lang="en">` |
 | `rel` | Type of linked resource | CSS `<link rel="stylesheet">` |
 | `role` / `aria-*` | Accessibility roles/labels for screen readers | Modal dialog, nav, sections, decorative SVGs (`aria-hidden`) |
-| `viewBox` | SVG coordinate grid for scaling icons | All 7 sidebar `<svg>` icons |
+| `viewBox` | SVG coordinate grid for scaling icons | All sidebar/card `<svg>` icons |
+| `points` | Coordinates for a `<polyline>` | The two card sparklines (set by JS) |
 | `data-nav-filter` | Custom data JS reads via `dataset` | Sidebar Income/Expenses buttons |
 | `data-*` (`data-action`, `data-id`) | Custom data JS can read via `dataset` | Edit/Delete buttons created by `ui.js` |
 
@@ -228,7 +232,9 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | | `loadTransactions()` | `getItem` + `JSON.parse` inside `try/catch` |
 | `validation.js` | `validateTransaction(data)` | Returns a list of error messages (empty = valid) |
 | `ui.js` | `renderDashboard()` | Calls all 7 calculations, writes them into the cards |
-| | `renderCharts()` | Draws monthly + category charts from real data (empty states if none) |
+| | `renderCharts()` | Draws monthly bars + category donut from real data (empty states if none) |
+| | `formatMoney(value)` | Formats money with ₦ (e.g. `₦50,000.00`); rates use plain `formatAmount()` |
+| | `renderSparklines()` / `drawSparkline()` | Draws SVG trend lines in the Spending/Income cards |
 | | `renderRecent()` | Draws the last 5 transactions (newest first) in the dashboard cell |
 | | `renderTransactions(list, msg)` | Builds table rows (green + / red − amounts) |
 | | `openAddModal()` / `openEditModal(tx)` / `closeModal()` | Modal show/hide + form filling |
@@ -239,7 +245,7 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 | | `handleFormSubmit()` | Validate → add/edit → save → re-draw |
 | | `handleTableClick()` | Edit/Delete via event delegation |
 | | `readFilters()` / `applyFilters()` | Read filter bar, re-draw filtered table |
-| | `showToday()` | Fills the top-bar date |
+| | `showGreeting()` | Sets "Good morning/afternoon/evening" by the hour |
 | | Quick-action / nav / menu / clear-all handlers | Pre-select type, apply sidebar filters, toggle mobile drawer, clear data |
 | | `loadRates()` | `try/catch` wrapper around the API call |
 
@@ -252,7 +258,9 @@ Each entry says: what the tag means, what it does, why it is used in this projec
 - **Selectors:** `.card` styles all cards; `.card-income .card-value` styles the value *inside* an income card (green). `*` resets all default margins.
 - **Classes vs IDs:** Classes (`.card`, `.btn`) style groups; IDs (`#dashboard`) target one element. This project styles almost entirely with classes.
 - **CSS variables (`:root`):** `--primary: #0f766e`, `--radius: 16px`, `--shadow`, etc. Change a value once, it updates everywhere. Used via `var(--primary)`.
-- **Colours & backgrounds:** Light grey page (`#f1f5f9`), white surfaces, dark sidebar (`#0f172a`), green income (`#16a34a`), red expense (`#dc2626`). One palette, used consistently.
+- **Colours & backgrounds:** Warm cream page (`#f6f4ef`), white surfaces, forest-green sidebar (`#14342b`), mint (`#d9f0e0`), pink tint (`#fdeef1`), gold accent (`#f2b84b`). One palette, used consistently.
+- **Donut chart:** `conic-gradient()` paints ring slices from real percentages; a `::after` circle punches the hole. Legend percentages are calculated in JS from category totals.
+- **Sparklines:** SVG `<polyline>` points computed from monthly totals (`x` = month index, `y` = value/max). Pure JS + SVG, no chart library.
 - **Box model:** Every element is content + `padding` (inside) + `border` + `margin` (outside). `box-sizing: border-box` (set on `*`) means `width` includes padding/border, so layouts don't overflow. Cards use `padding: 20px`; sections use `margin-bottom: 40px`.
 - **Flexbox (`display: flex`):** 1-D layout (row/column). Used for sidebar+page side-by-side, filter bar wrapping, modal buttons, nav links, chart columns.
 - **CSS Grid + Bento layout (`display: grid`):** 2-D layout (rows + columns). The dashboard uses a 4-column Bento grid: `.bento { grid-template-columns: repeat(4, 1fr); }` with cells spanning differently — `.bento-balance { grid-column: span 2; }` (hero), chart/category cells span 2, recent spans 4. Varied sizes create visual hierarchy instead of identical rows. At 1024px it becomes 2 columns; at 640px, 1 column.

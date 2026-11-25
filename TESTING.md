@@ -90,6 +90,15 @@ Browser behaviour (to verify in Stage 11): panel shows "Loading rates…" then r
 - New `renderRecent()` uses the same newest-first sort as the table; shows last 5 only; empty state when no data.
 - Bento grid: 4 cols desktop → 2 cols ≤1024px → 1 col ≤640px; sidebar off-canvas ≤900px. (Visual check required in browser — see checklist below.)
 
+## Template revision — regression check
+
+- All IDs preserved except `todayDate` (replaced by `greetingText`); new IDs: `donutChart`, `donutLegend`, `sparkExpense`, `sparkIncome`, `greetingText`, `thisMonthBtn`, `ctaAddBtn`.
+- Money now displays with ₦ (`formatMoney`); exchange rates stay plain (no ₦ on GBP/EUR).
+- Donut: top 4 categories + Others grouped; percentages from real totals; empty state when no expenses.
+- Sparklines: SVG polyline from last 6 monthly totals; hidden when fewer than 2 months.
+- Search moved to top bar (same `searchInput` ID — filtering unchanged). "This Month" sets From/To to current month.
+- New tags `<polyline>` and `<br>` documented in README; `<h1>` no longer used (noted honestly).
+
 ## Manual browser tests — STUDENT MUST PERFORM THESE (Stage 11)
 
 Logic tests above are automated and passing. The following browser tests **cannot be automated here** and must be performed by the student in the running app (Live Server). Tick each one only after actually doing it, and note the observed result:

@@ -11,21 +11,22 @@
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
-      <span class="brand-mark" aria-hidden="true">F</span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2h-2a2 2 0 0 0 0 4h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round"></path><circle cx="16.5" cy="14" r="1.2" fill="#ffffff"></circle></svg>
+      </span>
       <div>
-        <p class="brand-name">Finance Tracker</p>
+        <p class="brand-name">Expenses Tracker</p>
         <p class="brand-sub">Personal finance</p>
       </div>
     </div>
 
     <nav class="main-nav" aria-label="Main navigation">
-      <p class="nav-heading">Menu</p>
       <a href="#dashboard" class="nav-link nav-active">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"></path></svg>
         Dashboard
       </a>
       <a href="#transactions" class="nav-link">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h10"></path></svg>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"></path></svg>
         Transactions
       </a>
       <button type="button" class="nav-link" data-nav-filter="income">
@@ -38,7 +39,7 @@
       </button>
       <a href="#analytics" class="nav-link">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 20V10m6 10V4m6 16v-7m4 7H2"></path></svg>
-        Categories
+        Analytics
       </a>
       <a href="#exchange-rates" class="nav-link">
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 8h13m0 0l-3-3m3 3l-3 3M20 16H7m0 0l3 3m-3-3l3-3"></path></svg>
@@ -50,7 +51,7 @@
       </a>
     </nav>
 
-    <button type="button" id="addTransactionBtn" class="btn btn-primary btn-block">
+    <button type="button" id="addTransactionBtn" class="btn btn-mint btn-block">
       + Add Transaction
     </button>
   </aside>
@@ -60,10 +61,12 @@
 
     <header class="topbar">
       <button type="button" id="menuBtn" class="icon-btn" aria-label="Open menu">☰</button>
-      <div class="topbar-title">
-        <h1>Dashboard</h1>
-        <p id="todayDate" class="topbar-date"></p>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+        <label for="searchInput" class="sr-only">Search transactions</label>
+        <input type="search" id="searchInput" placeholder="Search transactions…">
       </div>
+      <button type="button" id="thisMonthBtn" class="btn btn-secondary">This Month</button>
       <button type="button" id="topAddBtn" class="btn btn-primary">+ Add</button>
     </header>
 
@@ -73,8 +76,8 @@
       <section id="dashboard" aria-label="Financial summary">
         <div class="welcome">
           <div>
-            <h2>Overview</h2>
-            <p class="section-note">Your money at a glance. All figures update automatically.</p>
+            <h2 id="greetingText">Overview</h2>
+            <p class="section-note">Track your expenses, stay on budget and achieve more.</p>
           </div>
           <div class="quick-actions">
             <button type="button" id="addIncomeBtn" class="btn btn-income">+ Add Income</button>
@@ -84,23 +87,46 @@
         </div>
 
         <div class="bento">
-          <!-- Hero: total balance (spans 2 columns) -->
-          <article class="card card-balance bento-balance">
-            <h3>Total Balance</h3>
-            <p class="card-value" id="availableBalance">0.00</p>
-            <p class="card-note">Income minus expenses</p>
+          <!-- Total spending (expenses) — mint card -->
+          <article class="card card-spending">
+            <div class="card-top">
+              <span class="card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M3 7a2 2 0 0 1 2-2h13a1 1 0 0 1 1 1v2h-2a2 2 0 0 0 0 4h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path></svg>
+              </span>
+              <svg class="sparkline" viewBox="0 0 100 30" aria-hidden="true"><polyline id="sparkExpense" points="" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+            </div>
+            <h3>Total Spending</h3>
+            <p class="card-value" id="totalExpenses">0.00</p>
           </article>
 
+          <!-- Total income — white card -->
           <article class="card card-income">
+            <div class="card-top">
+              <span class="card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+              <svg class="sparkline" viewBox="0 0 100 30" aria-hidden="true"><polyline id="sparkIncome" points="" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline></svg>
+            </div>
             <h3>Total Income</h3>
             <p class="card-value" id="totalIncome">0.00</p>
-            <p class="card-note">Money received</p>
           </article>
 
-          <article class="card card-expense">
-            <h3>Total Expenses</h3>
-            <p class="card-value" id="totalExpenses">0.00</p>
-            <p class="card-note">Money spent</p>
+          <!-- Remaining balance — pink card -->
+          <article class="card card-balance">
+            <div class="card-top">
+              <span class="card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20"><rect x="3" y="6" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"></rect><path d="M3 10h18" stroke="currentColor" stroke-width="1.8"></path></svg>
+              </span>
+            </div>
+            <h3>Remaining Balance</h3>
+            <p class="card-value" id="availableBalance">0.00</p>
+          </article>
+
+          <!-- Dark CTA card (functional: opens the form) -->
+          <article class="card card-cta">
+            <h3>Spend Smart, Live Better</h3>
+            <p class="card-note">Keep track of your money and reach your goals.</p>
+            <button type="button" id="ctaAddBtn" class="btn btn-mint">+ Add Transaction</button>
           </article>
 
           <!-- Small stat cells -->
@@ -130,10 +156,22 @@
         <div class="bento">
           <div class="panel bento-chart">
             <div class="panel-head">
-              <h3>Income vs Expenses</h3>
+              <h3>Spending Overview</h3>
+            </div>
+            <p class="section-note">Expense breakdown by category, largest first.</p>
+            <div id="categoryChart" class="donut-wrap">
+              <div id="donutChart" class="donut" role="img" aria-label="Expense breakdown donut chart"></div>
+              <ul id="donutLegend" class="donut-legend"></ul>
+            </div>
+            <p id="categoryEmpty" class="chart-empty" hidden>No expense data yet. Add an expense to see the breakdown.</p>
+          </div>
+
+          <div class="panel bento-category">
+            <div class="panel-head">
+              <h3>Monthly Trend</h3>
               <div class="legend">
                 <span class="legend-item"><span class="legend-dot legend-income"></span>Income</span>
-                <span class="legend-item"><span class="legend-dot legend-expense"></span>Expenses</span>
+                <span class="legend-item"><span class="legend-dot legend-expense"></span>Spending</span>
               </div>
             </div>
             <p class="section-note">Monthly totals from your transactions (last 6 months).</p>
@@ -141,19 +179,10 @@
             <p id="monthlyEmpty" class="chart-empty" hidden>No transaction data yet. Add income or expenses to see the chart.</p>
           </div>
 
-          <div class="panel bento-category">
-            <div class="panel-head">
-              <h3>Expense Breakdown by Category</h3>
-            </div>
-            <p class="section-note">Where your money goes, largest first.</p>
-            <div id="categoryChart" class="category-chart"></div>
-            <p id="categoryEmpty" class="chart-empty" hidden>No expense data yet. Add an expense to see the breakdown.</p>
-          </div>
-
           <div class="panel bento-recent">
             <div class="panel-head">
               <h3>Recent Transactions</h3>
-              <a href="#transactions" class="panel-link">View all</a>
+              <a href="#transactions" class="panel-link">View all →</a>
             </div>
             <ul id="recentList" class="recent-list"></ul>
             <p id="recentEmpty" class="chart-empty" hidden>No transactions yet. Add your first one above.</p>
@@ -161,16 +190,11 @@
         </div>
       </section>
 
-      <!-- ===== Search & filters + table ===== -->
+      <!-- ===== Filters + table ===== -->
       <section id="transactions" aria-label="Transactions">
         <h2>Transactions</h2>
 
         <form id="filterForm" class="filter-bar">
-          <div class="filter-group filter-search">
-            <label for="searchInput">Search by title</label>
-            <input type="search" id="searchInput" placeholder="e.g. Groceries">
-          </div>
-
           <div class="filter-group">
             <label for="filterType">Type</label>
             <select id="filterType">
