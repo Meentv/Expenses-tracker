@@ -156,6 +156,19 @@ body {
   width: 100%;
 }
 
+/* Close button inside the drawer (mobile only). */
+.sidebar-close {
+  display: none;
+  align-self: flex-end;
+  font-family: inherit;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  color: var(--sidebar-text);
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
 /* ---------- 3. Page & glass top bar ---------- */
 .page {
   flex: 1;
@@ -1036,6 +1049,10 @@ body {
 
   .sidebar.open {
     transform: translateX(0);
+  }
+
+  .sidebar-close {
+    display: block;
   }
 
   .main-content {
