@@ -233,10 +233,13 @@ function init() {
     .addEventListener("change", applyFilters);
 
   // Clear all filters back to their defaults.
+  // (The search box lives in the top bar, outside the form,
+  // so it must be cleared separately.)
   document
     .getElementById("clearFiltersBtn")
     .addEventListener("click", function () {
       document.getElementById("filterForm").reset();
+      document.getElementById("searchInput").value = "";
       applyFilters();
     });
 
@@ -315,6 +318,40 @@ function init() {
     .addEventListener("click", function () {
       document.getElementById("sidebar").classList.toggle("open");
     });
+
+  // Close the drawer with its own close button.
+  document
+    .getElementById("closeSidebarBtn")
+    .addEventListener("click", function () {
+      document.getElementById("sidebar").classList.remove("open");
+    });
+
+  // Close the drawer when any sidebar link is tapped.
+  const navLinks = document.querySelectorAll(".main-nav a");
+  navLinks.forEach(function (link) {
+    link.addEventListener("click", function () {
+      document.getElementById("sidebar").classList.remove("open");
+    });
+  });
+
+  // Close the modal when clicking the dark overlay
+  // (outside the white dialog box).
+  document
+    .getElementById("transactionModal")
+    .addEventListener("click", function (event) {
+      if (event.target.id === "transactionModal") {
+        closeModal();
+        clearForm();
+      }
+    });
+
+  // Close the modal with the Escape key.
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeModal();
+      clearForm();
+    }
+  });
 
   // Settings: clear all transactions (with confirmation).
   document
